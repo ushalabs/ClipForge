@@ -736,6 +736,49 @@ def create_from_link(body: dict = Body(...)):
     return jobs.public(job)
 
 
+@app.post("/api/jobs/batch")
+def create_batch(body: dict = Body(...)):
+    """Queue up to N latest videos from a YouTube playlist or channel URL."""
+    _need_verified()
+    _quota()
+    _throttle("newjob:" + ctx.uid(), 20, 600)
+    url = str(body.get("url", "")).strip()[:500]
+    if not media.site_allowed(url):
+        raise HTTPException(400, "Paste a full link to a YouTube playlist or channel.")
+    try:
+        media.check_youtube(url)
+    except media.YouTubeBlocked as e:
+        raise HTTPException(503, str(e))
+    creator = str(body.get("creator") or "") or None
+    if creator and not creators.get(creator):
+        raise HTTPException(404, "No such creator")
+    limit = max(1, min(10, int(body.get("limit") or 5)))
+    try:
+        entries = media.list_playlist(url, limit=limit)
+    except Exception:
+        raise HTTPException(422, "Couldn't read that playlist or channel.")
+    if not entries:
+        raise HTTPException(422, "No videos found in that playlist or channel.")
+    created = []
+    opts = body.get("options") or {}
+    for entry in entries:
+        try:
+            with _create_lock:
+                _job_slots()
+                j = jobs.create({"type": "url", "url": entry["url"], "name": entry["title"] or entry["url"]}, opts, creator=creator)
+                if entry.get("title"):
+                    j["title"] = entry["title"][:200]
+                if entry.get("duration"):
+                    j["duration"] = entry["duration"]
+                jobs.save(j)
+                created.append(jobs.public(j))
+        except HTTPException:
+            break
+        except (ValueError, TypeError) as e:
+            raise HTTPException(400, str(e) if isinstance(e, ValueError) else "Those options aren't valid.")
+    return {"jobs": created, "count": len(created)}
+
+
 @app.post("/api/upload")
 def create_from_file(file: UploadFile = File(...), options: str = Form("{}"), creator: str = Form("")):
     _need_verified()

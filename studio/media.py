@@ -121,7 +121,102 @@ def info(url: str) -> dict:
         i = ydl.extract_info(url, download=False)
     return {"title": i.get("title") or "", "uploader": i.get("uploader") or i.get("channel") or "",
             "duration": float(i.get("duration") or 0), "is_live": bool(i.get("is_live")),
-            "thumbnail": i.get("thumbnail") or "", "kind": i.get("_type") or "video"}
+            "thumbnail": i.get("thumbnail") or "", "kind": i.get("_type") or "video",
+            "heatmap": i.get("heatmap") or [], "chapters": i.get("chapters") or []}
+
+
+def signals(url: str, threshold: float = 0.6) -> dict:
+    """Retention peaks (Most Replayed) and chapters for a YouTube video, or {} when unavailable."""
+    if not url or not is_youtube(url):
+        return {}
+    try:
+        i = info(url)
+    except Exception:
+        return {}
+    peaks = []
+    for h in i.get("heatmap") or []:
+        try:
+            if float(h.get("value") or 0) >= threshold:
+                peaks.append((float(h["start_time"]), float(h["end_time"])))
+        except (KeyError, TypeError, ValueError):
+            continue
+    chapters = []
+    for ch in i.get("chapters") or []:
+        try:
+            chapters.append({"start": float(ch["start_time"]), "end": float(ch["end_time"]),
+                             "title": str(ch.get("title") or "")[:80]})
+        except (KeyError, TypeError, ValueError):
+            continue
+    return {"peaks": peaks, "chapters": chapters}
+
+
+def list_playlist(url: str, limit: int = 10) -> list:
+    """Entries from a YouTube playlist or channel URL: [{'url', 'title', 'duration'}]."""
+    limit = max(1, min(25, int(limit)))
+    opts = {"noplaylist": False, "quiet": True, "no_warnings": True, "logger": _Quiet(),
+            "extract_flat": "in_playlist", "playlistend": limit, "socket_timeout": 20}
+    import yt_dlp
+    with _youtube_guard(url), yt_dlp.YoutubeDL(opts) as ydl:
+        i = ydl.extract_info(url, download=False)
+    out = []
+    for e in (i.get("entries") or [])[:limit]:
+        if not isinstance(e, dict):
+            continue
+        vid_url = e.get("webpage_url") or e.get("url") or ""
+        if vid_url and not vid_url.startswith("http") and e.get("id"):
+            vid_url = f"https://www.youtube.com/watch?v={e['id']}"
+        if vid_url:
+            out.append({"url": vid_url, "title": (e.get("title") or "")[:200],
+                        "duration": float(e.get("duration") or 0)})
+    return out
+
+
+def _youtube_channel_id(url: str) -> str:
+    """Extract UC... channel id from a URL or its page metadata."""
+    m = re.search(r"/channel/(UC[\w-]{20,30})", url)
+    if m:
+        return m.group(1)
+    import httpx
+    try:
+        r = httpx.get(url, timeout=10, follow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+        if r.status_code == 200:
+            m = re.search(r'"externalId"\s*:\s*"(UC[\w-]{20,30})"', r.text) or re.search(r"channel_id=(UC[\w-]{20,30})", r.text)
+            if m:
+                return m.group(1)
+    except Exception:
+        pass
+    return ""
+
+
+def parse_rss(xml_text: str, limit: int = 10) -> list:
+    """Parse YouTube Atom RSS feed entries into [{'id', 'url', 'title', 'published'}]."""
+    import xml.etree.ElementTree as ET
+    ns = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015"}
+    root = ET.fromstring(xml_text)
+    out = []
+    for entry in root.findall("a:entry", ns)[:limit]:
+        vid = (entry.findtext("yt:videoId", "", ns) or "").strip()
+        title = (entry.findtext("a:title", "", ns) or "").strip()
+        pub = (entry.findtext("a:published", "", ns) or "").strip()
+        link_el = entry.find("a:link", ns)
+        href = (link_el.attrib.get("href") if link_el is not None else "") or (f"https://www.youtube.com/watch?v={vid}" if vid else "")
+        if vid and href:
+            out.append({"id": vid, "url": href, "title": title[:200], "published": pub})
+    return out
+
+
+def rss_videos(channel_url: str, limit: int = 10) -> list:
+    """Fetch recent uploads from a YouTube channel's public RSS feed (zero API quota)."""
+    if not is_youtube(channel_url):
+        return []
+    cid = _youtube_channel_id(channel_url)
+    if not cid:
+        return []
+    import httpx
+    r = httpx.get(f"https://www.youtube.com/feeds/videos.xml?channel_id={cid}", timeout=10)
+    if r.status_code != 200:
+        return []
+    return parse_rss(r.text, limit=limit)
 
 
 def youtube_words(url: str):

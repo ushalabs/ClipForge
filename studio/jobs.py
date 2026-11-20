@@ -711,6 +711,7 @@ def _run_job(job):
     blocks = [(x, min(hi, x + step)) for x in range(lo, hi, step)] or [(lo, hi)]
     words, tokens, model = [], 0, None
     done_blocks = 0
+    sig = media.signals(src["url"]) if src["type"] == "url" else {}
     yt = None
     if src["type"] == "url" and config.YT_TRANSCRIPT and media.is_youtube(src["url"]):
         try:
@@ -825,8 +826,12 @@ def _run_job(job):
             continue
         quota = max(1, math.ceil(left / (len(blocks) - bi)))
         s0 = int((a - lo) / 16000)
+        b_peaks = [(ps - shift, pe - shift) for ps, pe in sig.get("peaks", []) if pe > shift and ps < b / 16000]
+        b_chaps = [{"start": c["start"] - shift, "end": c["end"] - shift, "title": c["title"]}
+                   for c in sig.get("chapters", []) if c["end"] > shift and c["start"] < b / 16000]
         found, ai = brain.find_clips(bw, db[s0: s0 + int((b - a) / 16000) + 1], (b - a) / 16000, job["title"],
-                                     job["uploader"], quota, int(o["min_len"]), int(o["max_len"]), notes.append, game=game)
+                                     job["uploader"], quota, int(o["min_len"]), int(o["max_len"]), notes.append,
+                                     game=game, peaks=b_peaks, chapters=b_chaps)
         tokens += ai.get("tokens", 0)
         model = ai.get("model") or model
         if ai.get("note"):
@@ -839,8 +844,12 @@ def _run_job(job):
         _set(job, stage="Picking the best moments of the whole video", progress=max(job["progress"], 0.9))
         base = lo / 16000
         rel = [dict(w, s=round(w["s"] - base, 2), e=round(w["e"] - base, 2)) for w in words]
+        r_peaks = [(ps - base, pe - base) for ps, pe in sig.get("peaks", []) if pe > base]
+        r_chaps = [{"start": c["start"] - base, "end": c["end"] - base, "title": c["title"]}
+                   for c in sig.get("chapters", []) if c["end"] > base]
         found, ai = brain.find_clips(rel, db, span, job["title"], job["uploader"], int(o["max_clips"]),
-                                     int(o["min_len"]), int(o["max_len"]), notes.append, game=game)
+                                     int(o["min_len"]), int(o["max_len"]), notes.append,
+                                     game=game, peaks=r_peaks, chapters=r_chaps)
         tokens += ai.get("tokens", 0)
         model = ai.get("model") or model
         if ai.get("note"):
@@ -925,6 +934,42 @@ def _pick_up_after_restart():
             save(j)
 
 
+def _vod_watch_loop():
+    """Poll YouTube RSS feeds for creators with auto_watch_vods enabled and queue new uploads."""
+    while True:
+        time.sleep(900)
+        try:
+            for user_dir in config.USERS_DIR.iterdir():
+                if not user_dir.is_dir():
+                    continue
+                with ctx.as_user(user_dir.name):
+                    for c in creators.list_all():
+                        if not c.get("auto_watch_vods"):
+                            continue
+                        yt_url = (c.get("channels") or {}).get("youtube") or (c.get("channel") if media.is_youtube(c.get("channel", "")) else "")
+                        if not yt_url:
+                            continue
+                        try:
+                            vids = media.rss_videos(yt_url, limit=5)
+                        except Exception:
+                            continue
+                        if not vids:
+                            continue
+                        seen = list(c.get("seen_vods") or [])
+                        if not seen:
+                            creators.update(c["id"], {"seen_vods": [v["id"] for v in vids]})
+                            continue
+                        new_vids = [v for v in vids if v["id"] not in seen]
+                        if not new_vids:
+                            continue
+                        for v in reversed(new_vids):
+                            create({"type": "url", "url": v["url"], "name": v["title"] or v["url"]}, creator=c["id"])
+                            creators.log(c["id"], f"Auto-queued new YouTube upload: {v['title'] or v['url']}")
+                        creators.update(c["id"], {"seen_vods": ([v["id"] for v in new_vids] + seen)[:50]})
+        except Exception:  # noqa: BLE001
+            pass
+
+
 def start():
     load.start()
     load_all()
@@ -933,3 +978,4 @@ def start():
         threading.Thread(target=_worker, daemon=True).start()
     threading.Thread(target=_worker, args=(True,), daemon=True).start()   # re-making a single clip never waits behind whole videos
     threading.Thread(target=_live_worker, daemon=True).start()
+    threading.Thread(target=_vod_watch_loop, daemon=True).start()

@@ -35,6 +35,7 @@ HEAD = """You are a clip scout for short-form gaming and streaming videos (YouTu
 Below is a timestamped transcript of part of a video. Each line starts with [seconds]. Lines marked (LOUD)
 are where the audio got much louder than usual: shouting, laughing, sudden action. Lines marked (CHAT)
 are where the live chat suddenly got much busier, which usually means viewers reacted to something.
+Lines marked (PEAK) are where viewers replayed the video the most.
 
 Video title: {title}
 Channel: {uploader}
@@ -114,8 +115,10 @@ def _num(v, default=0.0):
 
 
 def _fmt(lines):
-    return "\n".join(f"[{l['s']:.1f}] {'(LOUD) ' if l['loud'] else ''}{'(CHAT) ' if l.get('chat') else ''}{_safe(l['text'], 2000)}"
-                     for l in lines)
+    return "\n".join(
+        f"[{l['s']:.1f}] {'(LOUD) ' if l['loud'] else ''}{'(CHAT) ' if l.get('chat') else ''}{'(PEAK) ' if l.get('peak') else ''}{_safe(l['text'], 2000)}"
+        for l in lines
+    )
 
 
 def _tidy(c, s, e, game=None):
@@ -150,8 +153,8 @@ def _overlaps(s, e, others):
     return any(min(e, k["end"]) - max(s, k["start"]) > 0.3 * (e - s) for k in others)
 
 
-def make_lines(words, loud=None, chat=None):
-    """Group words into caption-ish lines: [{'s','e','text','loud'}]."""
+def make_lines(words, loud=None, chat=None, peaks=None):
+    """Group words into caption-ish lines: [{'s','e','text','loud','chat','peak'}]."""
     lines, cur = [], []
 
     def flush():
@@ -161,8 +164,9 @@ def make_lines(words, loud=None, chat=None):
             if loud is not None and len(loud):
                 seg = loud[int(s): int(e) + 1]
                 is_loud = bool(len(seg) and seg.max() > 1.5)
+            is_peak = bool(peaks and any(ps < e and pe > s for ps, pe in peaks))
             lines.append({"s": s, "e": e, "text": " ".join(w["w"] for w in cur), "loud": is_loud,
-                          "chat": bool(chat and chat(s, e))})
+                          "chat": bool(chat and chat(s, e)), "peak": is_peak})
             cur.clear()
 
     for w in words:
@@ -270,9 +274,16 @@ def _game_rules(game):
     return GAME_RULES.format(game=_safe(games.name_of(game) or str(game), 40), tags=tags)
 
 
-def find_clips(words, db, duration, title="", uploader="", max_clips=6, min_len=15, max_len=60, log=print, game=None):
+def _chapters_note(chapters, a, b):
+    if not chapters:
+        return ""
+    hits = [f"[{c['start']:.0f}s] {_safe(c['title'], 60)}" for c in chapters if c["end"] >= a and c["start"] <= b and c.get("title")]
+    return ("\nVideo chapters:\n" + "\n".join(hits[:12]) + "\n") if hits else ""
+
+
+def find_clips(words, db, duration, title="", uploader="", max_clips=6, min_len=15, max_len=60, log=print, game=None, peaks=None, chapters=None):
     z = loud_zscore(db)
-    lines = make_lines(words, z)
+    lines = make_lines(words, z, peaks=peaks)
     if not lines:
         return [], {"model": None, "note": "No speech found."}
     found, used_model, tokens = [], None, 0
@@ -289,6 +300,7 @@ def find_clips(words, db, duration, title="", uploader="", max_clips=6, min_len=
             continue
         prompt = (HEAD.format(title=_safe(title) or "unknown", uploader=_safe(uploader) or "unknown", n=per_window)
                   + extra
+                  + _chapters_note(chapters, a, b)
                   + RULES.format(min_len=min_len, max_len=max_len, transcript=_fmt(chunk)))
         try:
             out, used_model, spent = ask_ai(prompt, purpose="Video: finding clips")
