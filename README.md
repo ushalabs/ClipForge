@@ -1,260 +1,151 @@
-# ClipForge
+<h1 align="center">
+  <img src="web/brand/favicon.svg" alt="ClipForge Logo" width="84" height="84" />
+  <br />
+  ClipForge
+</h1>
 
-> Based on [ClipForge](https://github.com/haziqahmedqasmi/clipforge) (MIT License). Rebranded and modified as ClipForge.
->
-> Guide by [@anistroz.ai](https://www.instagram.com/anistroz.ai/) (Instagram) and [@anistrozelite](https://www.youtube.com/@anistrozelite) (YouTube).
-> Screenshots ke saath poori guide: folder mein **`SETUP-GUIDE.html`** kholo.
+<p align="center">
+  <strong>Self-Hosted AI Video Clipping, Live Stream Highlights &amp; Multi-Platform Publishing</strong>
+</p>
 
-Lambi videos aur live streams se **captions wale vertical clips** (Reels / Shorts / TikTok) banao, apne hi computer pe.
-Free hai, koi sign-in nahi chahiye.
-
-## Apne PC pe kaise chalaye (3 steps)
-
-**1. Download karo.** Upar hare **Code** button pe click karo, phir **Download ZIP**.
-
-**2. Unzip karo, chhote folder mein.**
-- **Windows:** ZIP pe right-click karo, phir **Extract All**, aur folder ko `C:\ClipForge` pe rakho.
-  Desktop ya Downloads ke andar gehre folder mein mat rakhna: Windows lambe path pe speech model load nahi kar paata.
-- **Mac:** ZIP pe double-click karo aur folder ko apne home folder mein rakh do.
-
-**3. Start karo.**
-- **Windows:** `Start-ClipForge-Windows.bat` pe double-click karo.
-  "Windows protected your PC" aaye toh **More info** dabao, phir **Run anyway**.
-- **Mac:** `Start-ClipForge-Mac.command` pe right-click karo, phir **Open**, phir dobara **Open** (pehli baar hi aisa karna hai).
-- **Linux:** terminal mein `bash start-linux.sh` chalao.
-
-Pehli baar 5-10 minute lagenge: script khud Python, ffmpeg aur baaki zaroori cheezein install karegi, aur speech model
-(lagbhag 480 MB) download karegi. Phir browser apne aap khul jayega. Agli baar se bas wahi file double-click karni hai,
-aur app kuch hi second mein khul jayega.
-
-Jab tak app use kar rahe ho, kaali window (terminal) khuli rakhna. Use band karoge toh app bhi band ho jayega.
-
-### AI key daalo (free, 2 minute)
-
-AI key ke bina bhi clips bante hain, lekin sirf awaaz ki loudness dekh ke. Achhe clips ke liye:
-
-1. https://aistudio.google.com/apikey pe jao aur **Create API key** dabao (Google ki free key).
-2. ClipForge mein **Settings, AI** kholo, **Gemini** chuno, key paste karo, aur **Save and test** dabao.
-
-Phir YouTube, Twitch ya Kick ka link paste karo aur **Make clips** dabao.
-
-### Kuch problem aaye toh
-
-| Problem | Kya karein |
-|---|---|
-| "winget is not available" | Microsoft Store se **App Installer** install karo, phir dobara chalao |
-| "DLL load failed ... too long" | Folder ko `C:\ClipForge` pe le jao aur dobara chalao |
-| Python install ke baad error | Window band karo aur `.bat` file dobara double-click karo |
-| Browser nahi khula | Khud kholo: http://127.0.0.1:8765 |
-| Mac: "cannot be opened" | Right-click karo, phir **Open** (double-click nahi) |
-
-Zaroorat: Windows 10/11, macOS ya Linux, 8 GB RAM, lagbhag 3 GB khaali jagah. Video banne ka kaam tumhare
-computer pe hota hai, aur tumhari videos kahin upload nahi hoti.
+<p align="center">
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&amp;logo=python&amp;logoColor=white" alt="Python" /></a>
+  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/Backend-FastAPI%20%2B%20SQLAlchemy-009688?style=flat-square&amp;logo=fastapi&amp;logoColor=white" alt="FastAPI" /></a>
+  <a href="https://ffmpeg.org/"><img src="https://img.shields.io/badge/Media-FFmpeg%20%2B%20yt--dlp-007808?style=flat-square&amp;logo=ffmpeg&amp;logoColor=white" alt="FFmpeg" /></a>
+  <a href="https://github.com/k2-fsa/sherpa-onnx"><img src="https://img.shields.io/badge/ASR-Parakeet%200.6B%20(sherpa--onnx)-8B5CF6?style=flat-square" alt="ASR" /></a>
+  <br />
+  <a href="https://github.com/ushalabs/ClipForge"><img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-111208?style=flat-square" alt="Platform" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License" /></a>
+</p>
 
 ---
 
-## For developers
+## About ClipForge
 
-Turn long videos and live streams into captioned vertical clips, ready to post. Free and open source: run it on
-your own computer or server, with your own AI key.
+**ClipForge** is a local-first, self-hosted clipping studio that turns long-form videos and live streams into captioned vertical clips ready for YouTube Shorts, Instagram Reels, and TikTok.
 
-Paste a YouTube, Twitch or Kick link (or upload a file) and ClipForge finds the moments worth clipping, cuts them to
-9:16, adds word-by-word captions and a hook, and can post them to your connected accounts. It can also record a
-creator's live stream and clip the highlights while the stream is still running.
+It supports:
 
-## What it does
+- **VOD & channel ingestion** from YouTube, Twitch, Kick, playlists, or local file uploads
+- **Word-level local transcription** using Parakeet 0.6B via `sherpa-onnx` (or a remote GPU ASR worker)
+- **AI-assisted highlight selection** using timestamped transcripts, audio loudness spikes, chat activity, and YouTube retention peaks
+- **Automated 9:16 rendering** with word-by-word ASS captions (`Bounce`, `Hype`, `Clean`), hooks, and multiple framing layouts (`blur`, `zoom`, `crop`, `gameplay`, `split`)
+- **Live stream clipping** from rolling buffers while a broadcast is still running
+- **Creator workspaces & scheduled publishing** to YouTube, Instagram, and TikTok with daily caps and spacing
+- **Optional multi-user mode** (`CLIPFORGE_ACCOUNTS=1`) with email/password auth, Google OAuth, and an admin dashboard
 
-- **Clips from any video.** Transcribes the audio, asks an AI which moments would hold a stranger's attention, and
-  renders each one with captions in one of three styles.
-- **Live clipping.** Records a stream into a rolling buffer and clips as it happens, using loudness, chat activity
-  and the transcript.
-- **Workspaces per creator.** Channels, clip settings, posting rules and an activity log for each creator you clip.
-- **Posting.** Connect YouTube, Instagram and TikTok in one click, then queue or auto-post finished clips, with
-  spacing and daily caps (see [DEPLOY.md](DEPLOY.md#connecting-youtube-instagram-and-tiktok) for the one-time setup).
-- **No sign-in on your own computer.** It opens straight into the dashboard. On a shared server, switch accounts on
-  (`CLIPFORGE_ACCOUNTS=1`) for email or Google sign-in and an admin dashboard.
-- **Your own AI.** Gemini, OpenAI, Grok, Groq, OpenRouter, Claude, a local model through Ollama, or anything that
-  speaks the OpenAI chat format. No key at all also works: clips are then picked by loudness.
+---
 
-## Quick start
+## Features
 
-You need Python 3.10 or newer and `ffmpeg`. On Windows: `winget install Gyan.FFmpeg`. On a Mac: `brew install ffmpeg`.
-On Linux: `sudo apt install ffmpeg`. ClipForge finds it by itself and tells you in the dashboard if it is missing.
+### Clip Discovery & Transcription
+- **Fast YouTube discovery** using existing YouTube transcripts (`CLIPFORGE_YT_TRANSCRIPT=1`) before running local ASR only on selected clips
+- **Most-Replayed & chapter awareness** to surface high-retention moments even on calm talking-head or podcast videos
+- **Channel & playlist batching** plus automatic RSS polling for newly published YouTube uploads
+- **Loudness fallback** so clipping still works without an AI key
 
-Put ClipForge in a short folder that stays put: `C:\clipforge` on Windows, `~/clipforge` on a Mac or Linux. Not inside a
-temporary folder or an AI assistant's workspace: those get cleaned up, and on Windows a folder that deep stops the
-speech model from loading (Windows can't open files whose full path is over 260 characters). If an AI assistant
-installs it for you, it should ask you where to put it first ([AGENTS.md](AGENTS.md) tells it to).
+### Vertical Rendering & Layouts
+- **Five framing modes**: blurred fill (`blur`), zoomed fill (`zoom`), centre crop (`crop`), automatic corner facecam detection (`gameplay`), and top/bottom speaker split (`split`)
+- **Three bundled caption styles** (`Bounce`, `Hype`, `Clean`) rendered with `Poppins ExtraBold`, `Anton`, and `Archivo Black`
+- **Hinglish / Romanization support** for Hindi and Urdu speech
 
-On Windows:
+### YouTube, Instagram & TikTok Publishing
+- **One-click OAuth connections** for YouTube, Instagram, and TikTok
+- **Creator-level posting rules**: minimum score threshold, post spacing, daily caps, native YouTube `publishAt` scheduling, source-video linking, and non-Shorts 16:9 support
+- **Post analytics**: tracks views, likes, and comments for published clips
 
-```bash
-git clone <this repository> C:\clipforge
-```
+---
 
-```bash
-cd C:\clipforge
-```
+## Quick Start
 
-On a Mac or Linux:
+### Prerequisites
+- **Python 3.10+**
+- **FFmpeg** (`winget install Gyan.FFmpeg` on Windows, `brew install ffmpeg` on macOS, `sudo apt install ffmpeg` on Linux)
 
-```bash
-git clone <this repository> ~/clipforge
-```
+### Run Locally
+
+> **Windows note:** Place the repository in a short path such as `C:\ClipForge` so `sherpa-onnx` and `ffmpeg` never hit the Windows 260-character path limit.
 
 ```bash
-cd ~/clipforge
-```
-
-```bash
+git clone https://github.com/ushalabs/ClipForge.git C:\ClipForge
+cd C:\ClipForge
 pip install -r requirements.txt
-```
-
-Start the server:
-
-```bash
 python -m studio.server
 ```
 
-The first start downloads the speech model by itself (about 480 MB, once).
+On first launch, ClipForge downloads the speech model (~480 MB) automatically (or run `python -m studio.fetch_model` ahead of time). Open `http://127.0.0.1:8765` in your browser.
 
-Open http://127.0.0.1:8765. There is no sign-in: it opens straight into the dashboard. Go to **Settings, AI**, choose
-your AI service, paste your key and press **Save and test** (see [Choose your AI](#choose-your-ai)).
+One-click launchers are also included:
+- **Windows:** `Start-ClipForge-Windows.bat`
+- **macOS:** `Start-ClipForge-Mac.command`
+- **Linux:** `bash start-linux.sh`
 
-## Choose your AI
+### Run with Docker
 
-ClipForge needs a chat model that can return JSON. The easy way is in the dashboard: **Settings, AI**. Pick the
-service, paste your key, press **Find models** to choose from the service's own list, then **Save and test**. The
-key is kept in the data folder on your machine and is never shown again.
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
 
-If you prefer a file (or run a server), the same three things can go in `.env`. What is saved in the dashboard wins:
+See [DEPLOY.md](DEPLOY.md) for reverse-proxy configs (Caddy, Traefik, Nginx), PostgreSQL setup, OAuth app registration, and remote GPU ASR workers.
+
+---
+
+## AI Providers
+
+Configure your AI provider in the dashboard (**Settings → AI**) or via `.env`:
 
 ```ini
 CLIPFORGE_AI_PROVIDER=gemini
 CLIPFORGE_AI_MODELS=gemini-2.5-flash
-CLIPFORGE_AI_KEY=your-key-here
+CLIPFORGE_AI_KEY=your-api-key
 ```
 
-| `CLIPFORGE_AI_PROVIDER` | Service | Where to get a key |
+| Provider ID | Service | Notes |
 |---|---|---|
-| `gemini` | Google Gemini | https://aistudio.google.com/apikey |
-| `openai` | OpenAI | https://platform.openai.com/api-keys |
-| `xai` | Grok (xAI) | https://console.x.ai |
-| `groq` | Groq | https://console.groq.com/keys |
-| `openrouter` | OpenRouter (many models, one key) | https://openrouter.ai/keys |
-| `anthropic` | Claude | https://console.anthropic.com |
-| `ollama` | A model on your own machine, no key | https://ollama.com |
-| `custom` | Any OpenAI-compatible address: also set `CLIPFORGE_AI_BASE_URL` | |
+| `gemini` | Google Gemini | Native JSON schema support |
+| `openai` | OpenAI | Chat Completions JSON mode |
+| `xai` | xAI (Grok) | OpenAI-compatible |
+| `groq` | Groq | Fast hosted inference |
+| `openrouter` | OpenRouter | Multi-model routing |
+| `anthropic` | Anthropic (Claude) | Native Messages API |
+| `ollama` | Ollama | Local inference, no API key required |
+| `custom` | Custom OpenAI-compatible | Set `CLIPFORGE_AI_BASE_URL` |
 
-- `CLIPFORGE_AI_MODELS` is the model id exactly as the service names it. Model names change often, so check the
-  service's current list. Several ids separated by commas are tried in order, which gives you a fallback.
-- A fast, inexpensive model is the right choice. A one-hour video is read in about four requests.
-- You pay the AI service directly for what you use. The **AI usage** page in the app shows how many requests and
-  tokens each video took.
-- Speech to text does not use the AI service. It runs on your own machine, so audio never leaves it.
+Multiple comma-separated model IDs are tried in order as automatic fallbacks.
 
-## Settings
+---
 
-Everything is set through environment variables, normally in a `.env` file next to this README.
-[`.env.example`](.env.example) lists every setting with a short explanation. The ones that matter first:
+## Architecture
 
-| Setting | What it is for |
+| Module | Responsibility |
 |---|---|
-| `CLIPFORGE_AI_PROVIDER`, `CLIPFORGE_AI_MODELS`, `CLIPFORGE_AI_KEY` | The AI that picks clips and writes titles (or set it in the dashboard) |
-| `CLIPFORGE_ACCOUNTS` | `1` makes everyone sign in. Use it on any server other people can reach |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional: Sign in with Google, and connecting YouTube |
-| `CLIPFORGE_SMTP_*`, `CLIPFORGE_MAIL_FROM` | Optional: confirmation and password emails |
-| `CLIPFORGE_DATA` | Where videos, clips and the database are kept (default `./data`) |
+| `studio/server.py` | FastAPI routes, request gate, security headers, static UI serving |
+| `studio/config.py` | Environment and storage configuration |
+| `studio/db.py` | SQLAlchemy Core schema (SQLite WAL or PostgreSQL) |
+| `studio/auth.py` | Scrypt authentication, Google OAuth, sessions, rate limiting |
+| `studio/jobs.py` | Fair per-user job queue and VOD processing pipeline |
+| `studio/live.py` | Rolling-buffer live stream recording and highlight detection |
+| `studio/transcribe.py` | Local `sherpa-onnx` ASR pool and remote worker client |
+| `studio/asr_worker.py` | Standalone GPU transcription microservice |
+| `studio/brain.py` | Clip selection prompts, loudness/chat/heatmap scoring, sanitization |
+| `studio/render.py` | FFmpeg vertical composition, ASS word captions, hook overlays |
+| `studio/facecam.py` | Webcam box detection for `gameplay` layout |
+| `studio/posting.py` | Scheduled upload queue, quota tracking, and stats polling |
+| `web/index.html` | Single-file application UI (no build step) |
 
-`.env`, the `secrets/` folder and all user data are ignored by git. Keep keys there, never in the code.
+---
 
-## Admins
-
-This only matters with accounts switched on (`CLIPFORGE_ACCOUNTS=1`); without them you are the owner and can do
-everything. An account is an admin only when the database says so. No email address is special in the code and no web request
-can change a role. Do it on the machine that runs ClipForge:
-
-```bash
-python -m studio.admin grant you@example.com
-```
-
-`revoke` and `list` work the same way. The admin dashboard is at `/admin` and answers "not found" to everyone else.
-
-## How it is built
-
-| Part | What it is |
-|---|---|
-| `studio/` | The server: FastAPI, the clip pipeline, live recording, accounts |
-| `studio/ai.py` | The only file that talks to an AI service. Add a provider here |
-| `web/` | The pages: landing, sign-in, the app, the admin dashboard (plain HTML, CSS and JavaScript, no build step) |
-| `tests/` | Tests that run against a throwaway copy of the app |
-| `deploy/`, `Dockerfile`, `docker-compose.yml` | One-server deployment with PostgreSQL and automatic HTTPS |
-
-Video work is done with `ffmpeg` and `yt-dlp`. Speech is transcribed with `sherpa-onnx` and the Parakeet model.
-Data is kept per user: accounts in the database (SQLite on your own computer, PostgreSQL on a server), videos and
-clips in each user's own folder. [AGENTS.md](AGENTS.md) is a short map of the code for contributors and AI coding
-assistants.
-
-## Where your videos and clips are kept
-
-Everything ClipForge keeps is in one folder: videos, clips, recordings, creators, settings and the speech model. By
-default it is the `data` folder inside ClipForge. **Settings, Storage** shows the folder and how much room its drive
-has, opens it in one click, and lets you move it to another drive: choose the new folder, and ClipForge moves
-everything there the next time it starts. If the drive is nearly full, ClipForge says so and stops taking new videos
-until there is room. (`CLIPFORGE_DATA` in `.env` still works and takes priority.)
-
-## Updating
-
-ClipForge checks GitHub once a minute while it runs. When a newer version is out, the dashboard shows a notice
-within a minute or two (no restart needed), with what changed
-and how to update: ask your AI coding assistant to do it (the notice has a sentence to paste), or run
-`git pull && pip install -r requirements.txt` in the ClipForge folder and restart it (with Docker:
-`git pull && docker compose up -d --build`). Your `.env`, keys and clips are not touched. Only the two commit ids
-are sent to GitHub; set `CLIPFORGE_UPDATE_CHECK=0` to turn the check off.
-
-## Deploy
-
-[DEPLOY.md](DEPLOY.md) walks through a single server with Docker: the app, PostgreSQL, and Caddy for HTTPS.
-
-```bash
-docker compose up -d --build
-```
-
-## How it behaves under load
-
-- The page asks the server one small question every few seconds. When nothing has changed, the answer comes
-  straight from memory.
-- Each person's videos wait in their own line and the lines take turns, so one person cannot hold everyone up.
-- The server measures its own processor, memory and disk every second. Extra videos and recordings start only
-  while there is room, wait briefly when it is nearly full, and continue the moment it frees up.
-- There are no limits on upload size, video length, recordings, creators or storage unless you set them in
-  `.env`. Five videos can be sent at once. Request sizes are always capped, so junk can't fill the memory.
-
-## Tests
+## Testing
 
 ```bash
 python tests/run.py
 ```
 
-This starts a copy of the app on a spare port with an empty temporary data folder, runs the permission, abuse and
-queue tests against it, then removes it. It needs no keys and never touches real data.
+The test runner starts an isolated server instance on a temporary data directory and spare port (no external API keys required).
 
-## Security
+---
 
-- With sign-in off, ClipForge listens on this computer only (`127.0.0.1`), refuses changes sent by other websites,
-  and only answers to its own address. Do not expose it to the internet that way: turn accounts on.
-- Passwords are stored only as salted scrypt hashes. Sessions are random tokens stored hashed; cookies are HTTP-only.
-- Every route works out who is asking from the session, never from the request, so users only reach their own data.
-- Only known video sites are fetched, and text from videos is treated as data when it is shown to the AI.
-- Found a problem? Please report it privately through the repository's security advisories instead of opening a
-  public issue.
+## License
 
-## Using it responsibly
-
-Clip videos you made, or have permission to use. You are responsible for the rights to what you download, clip and
-post, and for following the terms of the sites you fetch from and post to.
-
-## Licence
-
-[MIT](LICENSE). Caption fonts in `studio/fonts/` (Anton, Archivo Black, Poppins) are under the SIL Open Font
-License; the licence texts are in the same folder.
+Released under the [MIT License](LICENSE).

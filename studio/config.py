@@ -162,7 +162,7 @@ ACCOUNTS = env("CLIPFORGE_ACCOUNTS", "0") == "1"
 # The two buttons along the top of the dashboard: the project's code, and where to follow its maker (feedback goes
 # there too). Set either to an empty value to hide that button, or point them at your own pages in a fork.
 REPO_URL = env("CLIPFORGE_REPO_URL", "https://github.com/ushalabs/ClipForge").strip()
-FOLLOW_URL = env("CLIPFORGE_FOLLOW_URL", "https://www.instagram.com/anistroz.ai/").strip()
+FOLLOW_URL = env("CLIPFORGE_FOLLOW_URL", "").strip()
 
 # ---------------------------------------------------------------- limits (per user, and for the whole server)
 # Your own ClipForge has no limits unless you set them: 0 (the default) means "none" for every limit below. The
