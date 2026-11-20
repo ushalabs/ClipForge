@@ -5,7 +5,7 @@ import tempfile
 import threading
 import time
 
-os.environ["CLIPKONTRAST_DATA"] = tempfile.mkdtemp()
+os.environ["CLIPFORGE_DATA"] = tempfile.mkdtemp()
 sys.path.insert(0, sys.argv[1])
 from studio import config, jobs, load  # noqa: E402
 

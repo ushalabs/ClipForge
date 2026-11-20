@@ -248,7 +248,7 @@ def overview() -> dict:
 
 def digest_text() -> str:
     o = overview()
-    lines = ["ClipKontrast daily summary"]
+    lines = ["ClipForge daily summary"]
     for r in o["creators"]:
         lines.append(f"- {r['name']}: {r['state']}, {r['clips_today']} clips today, {r['posted_today']} posted today, "
                      f"{r['queued']} waiting, {r['failed']} failed, {r['views']} views")

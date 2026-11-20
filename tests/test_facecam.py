@@ -5,7 +5,7 @@ border that stays in the same place in every frame.
 
 Runs against the code directly, with its own empty data folder."""
 import os, shutil, subprocess, sys, tempfile
-os.environ["CLIPKONTRAST_DATA"] = tempfile.mkdtemp(prefix="pc-facecam-")
+os.environ["CLIPFORGE_DATA"] = tempfile.mkdtemp(prefix="pc-facecam-")
 sys.path.insert(0, ".")
 from studio import facecam, render
 fails = []

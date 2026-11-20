@@ -1,7 +1,7 @@
 """Deleting clips, videos, creators and accounts, bulk actions and the zip download. Runs against the code directly,
 with its own empty data folder: nothing outside it is touched."""
 import os, sys, tempfile, zipfile
-os.environ["CLIPKONTRAST_DATA"] = tempfile.mkdtemp(prefix="pc-del-"); os.environ["DATABASE_URL"] = ""
+os.environ["CLIPFORGE_DATA"] = tempfile.mkdtemp(prefix="pc-del-"); os.environ["DATABASE_URL"] = ""
 sys.path.insert(0, ".")
 from pathlib import Path
 import sqlalchemy as sa
@@ -64,5 +64,5 @@ check("posts waiting for the deleted account are gone, the other account's stay"
 a2, _ = auth._create("A@example.com", "A again", password_hash="x")
 check("the same email can sign up again afterwards, as a new account", a2.id != a.id)
 print("ALL PASSED" if not fails else f"{len(fails)} failed")
-import shutil; shutil.rmtree(os.environ["CLIPKONTRAST_DATA"], ignore_errors=True)
+import shutil; shutil.rmtree(os.environ["CLIPFORGE_DATA"], ignore_errors=True)
 sys.exit(1 if fails else 0)

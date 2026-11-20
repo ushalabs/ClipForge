@@ -1,14 +1,14 @@
-"""Is there a newer ClipKontrast? Compares the version running here with the latest on GitHub, once a minute.
+"""Is there a newer ClipForge? Compares the version running here with the latest on GitHub, once a minute.
 
-The version here is the git commit this folder was on when ClipKontrast started (read straight from .git, no git
-program needed). Each minute, in the background, ClipKontrast asks GitHub which commit the project is on now: one small
+The version here is the git commit this folder was on when ClipForge started (read straight from .git, no git
+program needed). Each minute, in the background, ClipForge asks GitHub which commit the project is on now: one small
 request to the same address `git` itself uses, which has no hourly allowance to run out of. Only when that commit
 changes does it ask GitHub's API what was added, to show the list. Nothing about this computer or its users is
 sent. The owner sees a notice in the dashboard within a minute or two, with no restart.
 
-    CLIPKONTRAST_UPDATE_REPO     where to look (default: the project's own repository; a fork points at itself)
-    CLIPKONTRAST_UPDATE_BRANCH   which branch (default: main)
-    CLIPKONTRAST_UPDATE_CHECK=0  never look"""
+    CLIPFORGE_UPDATE_REPO     where to look (default: the project's own repository; a fork points at itself)
+    CLIPFORGE_UPDATE_BRANCH   which branch (default: main)
+    CLIPFORGE_UPDATE_CHECK=0  never look"""
 import re
 import threading
 import time
@@ -17,12 +17,12 @@ import httpx
 
 from . import config
 
-# Off unless CLIPKONTRAST_UPDATE_REPO is set: this copy is not its own git repository yet.
-REPO = (config.env("CLIPKONTRAST_UPDATE_REPO") or "").strip().strip("/")
-BRANCH = (config.env("CLIPKONTRAST_UPDATE_BRANCH") or "main").strip()
-ON = config.env("CLIPKONTRAST_UPDATE_CHECK", "1") != "0" and bool(re.fullmatch(r"[\w.\-]+/[\w.\-]+", REPO))
+# Off unless CLIPFORGE_UPDATE_REPO is set: this copy is not its own git repository yet.
+REPO = (config.env("CLIPFORGE_UPDATE_REPO") or "").strip().strip("/")
+BRANCH = (config.env("CLIPFORGE_UPDATE_BRANCH") or "main").strip()
+ON = config.env("CLIPFORGE_UPDATE_CHECK", "1") != "0" and bool(re.fullmatch(r"[\w.\-]+/[\w.\-]+", REPO))
 EVERY = 60
-UA = {"User-Agent": "ClipKontrast-update-check"}
+UA = {"User-Agent": "ClipForge-update-check"}
 _state = {"checked": 0.0, "result": None, "seen": "", "notes": None}
 _lock = threading.Lock()
 _started = False
@@ -52,7 +52,7 @@ def current() -> str:
     return ""
 
 
-RUNNING = current()       # the code in memory: what ClipKontrast is actually running until it is restarted
+RUNNING = current()       # the code in memory: what ClipForge is actually running until it is restarted
 
 
 def newest() -> str:
@@ -119,7 +119,7 @@ def latest():
 
 
 def start():
-    """Look every minute, in the background, for as long as ClipKontrast runs."""
+    """Look every minute, in the background, for as long as ClipForge runs."""
     global _started
     if not ON or _started:
         return

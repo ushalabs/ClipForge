@@ -2,10 +2,10 @@
 stand-ins answering the way their documentation says, so nothing leaves this machine."""
 import json, os, sys, tempfile, time
 from urllib.parse import parse_qs, urlparse
-os.environ["CLIPKONTRAST_DATA"] = tempfile.mkdtemp(prefix="pc-connect-")
-os.environ.update(DATABASE_URL="", CLIPKONTRAST_ACCOUNTS="1", CLIPKONTRAST_PUBLIC_URL="https://clips.example.com", CLIPKONTRAST_VERIFY_EMAIL="0",
-                  GOOGLE_CLIENT_ID="", GOOGLE_CLIENT_SECRET="", GOOGLE_CLIENT_FILE="", CLIPKONTRAST_IG_APP_ID="", CLIPKONTRAST_IG_APP_SECRET="",
-                  CLIPKONTRAST_TIKTOK_CLIENT_KEY="", CLIPKONTRAST_TIKTOK_CLIENT_SECRET="")
+os.environ["CLIPFORGE_DATA"] = tempfile.mkdtemp(prefix="pc-connect-")
+os.environ.update(DATABASE_URL="", CLIPFORGE_ACCOUNTS="1", CLIPFORGE_PUBLIC_URL="https://clips.example.com", CLIPFORGE_VERIFY_EMAIL="0",
+                  GOOGLE_CLIENT_ID="", GOOGLE_CLIENT_SECRET="", GOOGLE_CLIENT_FILE="", CLIPFORGE_IG_APP_ID="", CLIPFORGE_IG_APP_SECRET="",
+                  CLIPFORGE_TIKTOK_CLIENT_KEY="", CLIPFORGE_TIKTOK_CLIENT_SECRET="")
 sys.path.insert(0, ".")
 from pathlib import Path
 import sqlalchemy as sa
@@ -188,5 +188,5 @@ with ctx.as_user(user.id):
     check("TikTok: an old sign-in is renewed, and the new refresh token kept", accounts.get(ttacc["id"])["refresh_token"], "tt-refresh-2")
 
 print("ALL PASSED" if not fails else f"{len(fails)} failed")
-import shutil; db.engine.dispose(); shutil.rmtree(os.environ["CLIPKONTRAST_DATA"], ignore_errors=True)
+import shutil; db.engine.dispose(); shutil.rmtree(os.environ["CLIPFORGE_DATA"], ignore_errors=True)
 sys.exit(1 if fails else 0)

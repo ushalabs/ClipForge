@@ -5,9 +5,9 @@ import os
 import sys
 import tempfile
 
-os.environ["CLIPKONTRAST_DATA"] = tempfile.mkdtemp(prefix="pc-local-")
-os.environ.update(DATABASE_URL="", CLIPKONTRAST_ACCOUNTS="0", CLIPKONTRAST_AI_PROVIDER="gemini", CLIPKONTRAST_AI_MODELS="", CLIPKONTRAST_AI_KEY="",
-                  CLIPKONTRAST_AI_KEY_FILE="", CLIPKONTRAST_AI_BASE_URL="", CLIPKONTRAST_PUBLIC_URL="http://127.0.0.1:8765")
+os.environ["CLIPFORGE_DATA"] = tempfile.mkdtemp(prefix="pc-local-")
+os.environ.update(DATABASE_URL="", CLIPFORGE_ACCOUNTS="0", CLIPFORGE_AI_PROVIDER="gemini", CLIPFORGE_AI_MODELS="", CLIPFORGE_AI_KEY="",
+                  CLIPFORGE_AI_KEY_FILE="", CLIPFORGE_AI_BASE_URL="", CLIPFORGE_PUBLIC_URL="http://127.0.0.1:8765")
 sys.path.insert(0, ".")
 from fastapi.testclient import TestClient  # noqa: E402
 
@@ -121,5 +121,5 @@ check("a failed test says why, without the key", (r.status_code, "wrong-key-0000
 print("ALL PASSED" if not fails else f"{len(fails)} failed")
 import shutil  # noqa: E402
 db.engine.dispose()
-shutil.rmtree(os.environ["CLIPKONTRAST_DATA"], ignore_errors=True)
+shutil.rmtree(os.environ["CLIPFORGE_DATA"], ignore_errors=True)
 sys.exit(1 if fails else 0)

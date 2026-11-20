@@ -1,9 +1,9 @@
 """Sending account emails (verify your address, reset your password) over SMTP.
 
 Works with any provider that offers SMTP: Resend, Postmark, Brevo, Amazon SES, Google Workspace and so on. Set
-CLIPKONTRAST_SMTP_HOST, CLIPKONTRAST_SMTP_PORT (587), CLIPKONTRAST_SMTP_USER, CLIPKONTRAST_SMTP_PASSWORD_FILE (a file holding the
-password or API key) and CLIPKONTRAST_MAIL_FROM ("ClipKontrast <hello@yourdomain.com>"). Without them nothing is sent and the
-link is written to the server log instead, which is enough for running ClipKontrast on your own machine."""
+CLIPFORGE_SMTP_HOST, CLIPFORGE_SMTP_PORT (587), CLIPFORGE_SMTP_USER, CLIPFORGE_SMTP_PASSWORD_FILE (a file holding the
+password or API key) and CLIPFORGE_MAIL_FROM ("ClipForge <hello@yourdomain.com>"). Without them nothing is sent and the
+link is written to the server log instead, which is enough for running ClipForge on your own machine."""
 import html
 import logging
 import smtplib
@@ -14,7 +14,7 @@ from email.utils import formataddr, getaddresses, make_msgid, parseaddr
 
 from . import config
 
-log = logging.getLogger("clipkontrast.mail")
+log = logging.getLogger("clipforge.mail")
 
 
 def ready() -> bool:
@@ -22,7 +22,7 @@ def ready() -> bool:
 
 
 LOGO = config.ROOT / "web" / "brand" / "logo-email.png"   # PNG: email apps don't show SVG
-LOGO_CID = "clipkontrast-logo"
+LOGO_CID = "clipforge-logo"
 
 
 def _html(title: str, intro: str, button: str, link: str, outro: str, logo_src: str = "cid:" + LOGO_CID) -> str:
@@ -39,7 +39,7 @@ def _html(title: str, intro: str, button: str, link: str, outro: str, logo_src: 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F4EEEA"><tr><td align="center" style="padding:36px 14px">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px">
     <tr><td style="padding:0 6px 22px"><a href="{e(site)}" style="text-decoration:none">
-      <img src="{e(logo_src)}" width="138" height="38" alt="ClipKontrast" style="display:block;border:0;width:138px;height:38px"></a></td></tr>
+      <img src="{e(logo_src)}" width="138" height="38" alt="ClipForge" style="display:block;border:0;width:138px;height:38px"></a></td></tr>
     <tr><td style="background:#ffffff;border-radius:18px;border:1px solid #EAE2DC;padding:36px 34px">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
         <tr><td style="font-family:{font};font-size:24px;line-height:1.25;font-weight:700;color:#1A2100;padding-bottom:12px">{e(title)}</td></tr>
@@ -53,14 +53,14 @@ def _html(title: str, intro: str, button: str, link: str, outro: str, logo_src: 
           Button not working? Copy this link into your browser:<br><a href="{e(link)}" style="color:#4E6B00;word-break:break-all">{e(link)}</a></td></tr>
       </table></td></tr>
     <tr><td align="center" style="padding:24px 10px 0;font-family:{font};font-size:12px;line-height:1.7;color:#9C8A7E">
-      You're getting this because of your ClipKontrast account. We only email you about your account.<br>
-      <a href="{e(site)}" style="color:#7A6A60;text-decoration:underline">ClipKontrast</a> &nbsp;·&nbsp;
+      You're getting this because of your ClipForge account. We only email you about your account.<br>
+      <a href="{e(site)}" style="color:#7A6A60;text-decoration:underline">ClipForge</a> &nbsp;·&nbsp;
       <a href="{e(site)}/privacy" style="color:#7A6A60;text-decoration:underline">Privacy</a> &nbsp;·&nbsp;
       <a href="{e(site)}/terms" style="color:#7A6A60;text-decoration:underline">Terms</a></td></tr>
   </table></td></tr></table></body></html>"""
 
 
-def preview(title="Confirm your email", intro="Thanks for joining ClipKontrast. Confirm this is your email address to start clipping.",
+def preview(title="Confirm your email", intro="Thanks for joining ClipForge. Confirm this is your email address to start clipping.",
             button="Confirm my email", link=None, outro="The link works for 3 days. If you didn't sign up, you can ignore this email.") -> str:
     """The same email for viewing in a browser: the logo is inlined so it shows without an email app."""
     import base64
@@ -77,11 +77,11 @@ def send(to: str, subject: str, title: str, intro: str, button: str, link: str, 
         if config.HTTPS:      # a real site: a sign-in link must never sit in a log file
             log.warning("Email not set up, so nothing was sent: %s", subject)
         else:                 # on your own computer the link is printed so you can use it
-            print(f"[ClipKontrast mail] {subject} for {to}: {link}", flush=True)
+            print(f"[ClipForge mail] {subject} for {to}: {link}", flush=True)
         return False
     msg = EmailMessage()
     name, addr = parseaddr(config.MAIL_FROM)
-    msg["From"] = formataddr((name or "ClipKontrast", addr))
+    msg["From"] = formataddr((name or "ClipForge", addr))
     msg["To"] = to
     msg["Subject"] = subject
     msg["Message-ID"] = make_msgid(domain=addr.split("@")[-1] if "@" in addr else None)
@@ -89,7 +89,7 @@ def send(to: str, subject: str, title: str, intro: str, button: str, link: str, 
     msg.add_alternative(_html(title, intro, button, link, outro), subtype="html")
     if LOGO.is_file():   # the logo travels inside the email, so it shows without loading anything from the web
         msg.get_payload()[1].add_related(LOGO.read_bytes(), maintype="image", subtype="png", cid=f"<{LOGO_CID}>",
-                                         filename="clipkontrast.png", disposition="inline")
+                                         filename="clipforge.png", disposition="inline")
 
     def work():
         try:
@@ -106,7 +106,7 @@ def send(to: str, subject: str, title: str, intro: str, button: str, link: str, 
                     s.send_message(msg)
         except Exception as e:  # noqa: BLE001
             log.error("Could not send %r to %s: %s", subject, to, e)
-            print(f"[ClipKontrast mail] could not send {subject!r} to {to}: {e}", flush=True)
+            print(f"[ClipForge mail] could not send {subject!r} to {to}: {e}", flush=True)
 
     threading.Thread(target=work, daemon=True).start()
     return True

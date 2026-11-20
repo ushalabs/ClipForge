@@ -1,4 +1,4 @@
-"""Permission tests against a throwaway ClipKontrast server. Usage: test_permissions.py <base url> <project root> <python exe>"""
+"""Permission tests against a throwaway ClipForge server. Usage: test_permissions.py <base url> <project root> <python exe>"""
 import os
 import subprocess
 import sys

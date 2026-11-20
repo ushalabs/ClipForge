@@ -1,8 +1,8 @@
 """Security hardening: who is asking (rate limits), email addresses, Google sign-in, and text going into AI prompts.
 Runs against the code directly, with its own empty data folder: nothing outside it is touched."""
 import os, sys, tempfile, time
-os.environ["CLIPKONTRAST_DATA"] = tempfile.mkdtemp(prefix="pc-hard-"); os.environ["DATABASE_URL"] = ""
-os.environ["CLIPKONTRAST_TRUST_PROXY"] = "1"; os.environ["CLIPKONTRAST_CLIENT_IP_HEADER"] = "CF-Connecting-IP"
+os.environ["CLIPFORGE_DATA"] = tempfile.mkdtemp(prefix="pc-hard-"); os.environ["DATABASE_URL"] = ""
+os.environ["CLIPFORGE_TRUST_PROXY"] = "1"; os.environ["CLIPFORGE_CLIENT_IP_HEADER"] = "CF-Connecting-IP"
 os.environ["GOOGLE_CLIENT_ID"] = "id"; os.environ["GOOGLE_CLIENT_SECRET"] = "secret"
 sys.path.insert(0, ".")
 import sqlalchemy as sa
@@ -33,7 +33,7 @@ for bad in ("x,victim@example.com", "a<b>@example.com", 'a"b@example.com', "a;b@
 for good in ("jane.doe+news@example.com", "a_b-c@sub.example.co.uk"):
     check(f"{good!r} is still accepted", bool(auth.EMAIL_RE.match(good)))
 sent = []
-mailer.config.SMTP_HOST, mailer.config.MAIL_FROM = "smtp.invalid", "ClipKontrast <hello@example.com>"
+mailer.config.SMTP_HOST, mailer.config.MAIL_FROM = "smtp.invalid", "ClipForge <hello@example.com>"
 mailer.threading.Thread = lambda target, **k: type("T", (), {"start": lambda s: sent.append(1)})()
 check("a header with two addresses is never sent", mailer.send("x,victim@example.com", "s", "t", "i", "b", "https://x", "o") is False and not sent)
 check("a normal address is sent", mailer.send("jane@example.com", "s", "t", "i", "b", "https://x", "o") is True and sent)

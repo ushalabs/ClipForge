@@ -2,7 +2,7 @@
 
     python tests/run.py
 
-Starts ClipKontrast on a spare port with an empty, temporary data folder, runs the tests against it, then stops it and
+Starts ClipForge on a spare port with an empty, temporary data folder, runs the tests against it, then stops it and
 deletes the folder. Your real data and your running server are never touched. No AI key is needed: the tests cover accounts, permissions, limits and the queue, not clip quality."""
 import os
 import shutil
@@ -14,20 +14,20 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-PORT = int(os.environ.get("CLIPKONTRAST_TEST_PORT", "8799"))
+PORT = int(os.environ.get("CLIPFORGE_TEST_PORT", "8799"))
 BASE = f"http://127.0.0.1:{PORT}"
 
 
 def main() -> int:
-    data = Path(tempfile.mkdtemp(prefix="clipkontrast-test-"))
-    env = {**os.environ, "CLIPKONTRAST_DATA": str(data), "CLIPKONTRAST_PORT": str(PORT), "CLIPKONTRAST_PUBLIC_URL": BASE,
-           "CLIPKONTRAST_HOST": "127.0.0.1", "CLIPKONTRAST_AUTO_RELOAD": "0", "DATABASE_URL": "",
-           "CLIPKONTRAST_ACCOUNTS": "1", "CLIPKONTRAST_FETCH_MODEL": "0", "CLIPKONTRAST_UPDATE_CHECK": "0",                   # these tests are about people signing in; tests/test_local.py covers the default
+    data = Path(tempfile.mkdtemp(prefix="clipforge-test-"))
+    env = {**os.environ, "CLIPFORGE_DATA": str(data), "CLIPFORGE_PORT": str(PORT), "CLIPFORGE_PUBLIC_URL": BASE,
+           "CLIPFORGE_HOST": "127.0.0.1", "CLIPFORGE_AUTO_RELOAD": "0", "DATABASE_URL": "",
+           "CLIPFORGE_ACCOUNTS": "1", "CLIPFORGE_FETCH_MODEL": "0", "CLIPFORGE_UPDATE_CHECK": "0",                   # these tests are about people signing in; tests/test_local.py covers the default
            # nothing outside this machine is contacted: no AI, no email, no Google sign-in
-           "CLIPKONTRAST_SMTP_HOST": "", "CLIPKONTRAST_VERIFY_EMAIL": "1",   # the tests cover the confirm-your-email rule
+           "CLIPFORGE_SMTP_HOST": "", "CLIPFORGE_VERIFY_EMAIL": "1",   # the tests cover the confirm-your-email rule
            "GOOGLE_CLIENT_ID": "", "GOOGLE_CLIENT_SECRET": "", "GOOGLE_CLIENT_FILE": "", "PYTHONUNBUFFERED": "1",
-           "CLIPKONTRAST_AI_KEY": "", "CLIPKONTRAST_AI_KEY_FILE": "", "CLIPKONTRAST_AI_MODELS": "",
-           "CLIPKONTRAST_UPLOAD_PART_MB": "5", "CLIPKONTRAST_MAX_UPLOAD_MB": "64"}
+           "CLIPFORGE_AI_KEY": "", "CLIPFORGE_AI_KEY_FILE": "", "CLIPFORGE_AI_MODELS": "",
+           "CLIPFORGE_UPLOAD_PART_MB": "5", "CLIPFORGE_MAX_UPLOAD_MB": "64"}
     log = data / "server.log"
     failed = []
     with log.open("w", encoding="utf-8") as out:

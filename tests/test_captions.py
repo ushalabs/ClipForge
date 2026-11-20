@@ -33,7 +33,7 @@ def rejects_caption_value(call):
 
 
 def main(data):
-    os.environ.update(CLIPKONTRAST_DATA=data, DATABASE_URL="", CLIPKONTRAST_ACCOUNTS="0")
+    os.environ.update(CLIPFORGE_DATA=data, DATABASE_URL="", CLIPFORGE_ACCOUNTS="0")
     from studio import auth, brain, creators, ctx, db, jobs, render, roman, server
 
     db.init()

@@ -3,7 +3,7 @@ code fence around it. The answer is looked for inside the answer rather than dem
 
 Runs against the code directly, with its own empty data folder."""
 import os, sys, tempfile
-os.environ["CLIPKONTRAST_DATA"] = tempfile.mkdtemp(prefix="pc-answer-")
+os.environ["CLIPFORGE_DATA"] = tempfile.mkdtemp(prefix="pc-answer-")
 sys.path.insert(0, ".")
 from studio.ai import _parse
 fails = []
