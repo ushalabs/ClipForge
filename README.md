@@ -1,6 +1,6 @@
-# ClipKontrast
+# ClipForge
 
-> Based on [PeakCut](https://github.com/haziqahmedqasmi/peakcut) (MIT License). Rebranded and modified as ClipKontrast.
+> Based on [ClipForge](https://github.com/haziqahmedqasmi/clipforge) (MIT License). Rebranded and modified as ClipForge.
 >
 > Guide by [@anistroz.ai](https://www.instagram.com/anistroz.ai/) (Instagram) and [@anistrozelite](https://www.youtube.com/@anistrozelite) (YouTube).
 > Screenshots ke saath poori guide: folder mein **`SETUP-GUIDE.html`** kholo.
@@ -13,14 +13,14 @@ Free hai, koi sign-in nahi chahiye.
 **1. Download karo.** Upar hare **Code** button pe click karo, phir **Download ZIP**.
 
 **2. Unzip karo, chhote folder mein.**
-- **Windows:** ZIP pe right-click karo, phir **Extract All**, aur folder ko `C:\ClipKontrast` pe rakho.
+- **Windows:** ZIP pe right-click karo, phir **Extract All**, aur folder ko `C:\ClipForge` pe rakho.
   Desktop ya Downloads ke andar gehre folder mein mat rakhna: Windows lambe path pe speech model load nahi kar paata.
 - **Mac:** ZIP pe double-click karo aur folder ko apne home folder mein rakh do.
 
 **3. Start karo.**
-- **Windows:** `Start-ClipKontrast-Windows.bat` pe double-click karo.
+- **Windows:** `Start-ClipForge-Windows.bat` pe double-click karo.
   "Windows protected your PC" aaye toh **More info** dabao, phir **Run anyway**.
-- **Mac:** `Start-ClipKontrast-Mac.command` pe right-click karo, phir **Open**, phir dobara **Open** (pehli baar hi aisa karna hai).
+- **Mac:** `Start-ClipForge-Mac.command` pe right-click karo, phir **Open**, phir dobara **Open** (pehli baar hi aisa karna hai).
 - **Linux:** terminal mein `bash start-linux.sh` chalao.
 
 Pehli baar 5-10 minute lagenge: script khud Python, ffmpeg aur baaki zaroori cheezein install karegi, aur speech model
@@ -34,7 +34,7 @@ Jab tak app use kar rahe ho, kaali window (terminal) khuli rakhna. Use band karo
 AI key ke bina bhi clips bante hain, lekin sirf awaaz ki loudness dekh ke. Achhe clips ke liye:
 
 1. https://aistudio.google.com/apikey pe jao aur **Create API key** dabao (Google ki free key).
-2. ClipKontrast mein **Settings, AI** kholo, **Gemini** chuno, key paste karo, aur **Save and test** dabao.
+2. ClipForge mein **Settings, AI** kholo, **Gemini** chuno, key paste karo, aur **Save and test** dabao.
 
 Phir YouTube, Twitch ya Kick ka link paste karo aur **Make clips** dabao.
 
@@ -43,7 +43,7 @@ Phir YouTube, Twitch ya Kick ka link paste karo aur **Make clips** dabao.
 | Problem | Kya karein |
 |---|---|
 | "winget is not available" | Microsoft Store se **App Installer** install karo, phir dobara chalao |
-| "DLL load failed ... too long" | Folder ko `C:\ClipKontrast` pe le jao aur dobara chalao |
+| "DLL load failed ... too long" | Folder ko `C:\ClipForge` pe le jao aur dobara chalao |
 | Python install ke baad error | Window band karo aur `.bat` file dobara double-click karo |
 | Browser nahi khula | Khud kholo: http://127.0.0.1:8765 |
 | Mac: "cannot be opened" | Right-click karo, phir **Open** (double-click nahi) |
@@ -58,7 +58,7 @@ computer pe hota hai, aur tumhari videos kahin upload nahi hoti.
 Turn long videos and live streams into captioned vertical clips, ready to post. Free and open source: run it on
 your own computer or server, with your own AI key.
 
-Paste a YouTube, Twitch or Kick link (or upload a file) and ClipKontrast finds the moments worth clipping, cuts them to
+Paste a YouTube, Twitch or Kick link (or upload a file) and ClipForge finds the moments worth clipping, cuts them to
 9:16, adds word-by-word captions and a hook, and can post them to your connected accounts. It can also record a
 creator's live stream and clip the highlights while the stream is still running.
 
@@ -72,16 +72,16 @@ creator's live stream and clip the highlights while the stream is still running.
 - **Posting.** Connect YouTube, Instagram and TikTok in one click, then queue or auto-post finished clips, with
   spacing and daily caps (see [DEPLOY.md](DEPLOY.md#connecting-youtube-instagram-and-tiktok) for the one-time setup).
 - **No sign-in on your own computer.** It opens straight into the dashboard. On a shared server, switch accounts on
-  (`CLIPKONTRAST_ACCOUNTS=1`) for email or Google sign-in and an admin dashboard.
+  (`CLIPFORGE_ACCOUNTS=1`) for email or Google sign-in and an admin dashboard.
 - **Your own AI.** Gemini, OpenAI, Grok, Groq, OpenRouter, Claude, a local model through Ollama, or anything that
   speaks the OpenAI chat format. No key at all also works: clips are then picked by loudness.
 
 ## Quick start
 
 You need Python 3.10 or newer and `ffmpeg`. On Windows: `winget install Gyan.FFmpeg`. On a Mac: `brew install ffmpeg`.
-On Linux: `sudo apt install ffmpeg`. ClipKontrast finds it by itself and tells you in the dashboard if it is missing.
+On Linux: `sudo apt install ffmpeg`. ClipForge finds it by itself and tells you in the dashboard if it is missing.
 
-Put ClipKontrast in a short folder that stays put: `C:\clipkontrast` on Windows, `~/clipkontrast` on a Mac or Linux. Not inside a
+Put ClipForge in a short folder that stays put: `C:\clipforge` on Windows, `~/clipforge` on a Mac or Linux. Not inside a
 temporary folder or an AI assistant's workspace: those get cleaned up, and on Windows a folder that deep stops the
 speech model from loading (Windows can't open files whose full path is over 260 characters). If an AI assistant
 installs it for you, it should ask you where to put it first ([AGENTS.md](AGENTS.md) tells it to).
@@ -89,21 +89,21 @@ installs it for you, it should ask you where to put it first ([AGENTS.md](AGENTS
 On Windows:
 
 ```bash
-git clone <this repository> C:\clipkontrast
+git clone <this repository> C:\clipforge
 ```
 
 ```bash
-cd C:\clipkontrast
+cd C:\clipforge
 ```
 
 On a Mac or Linux:
 
 ```bash
-git clone <this repository> ~/clipkontrast
+git clone <this repository> ~/clipforge
 ```
 
 ```bash
-cd ~/clipkontrast
+cd ~/clipforge
 ```
 
 ```bash
@@ -123,19 +123,19 @@ your AI service, paste your key and press **Save and test** (see [Choose your AI
 
 ## Choose your AI
 
-ClipKontrast needs a chat model that can return JSON. The easy way is in the dashboard: **Settings, AI**. Pick the
+ClipForge needs a chat model that can return JSON. The easy way is in the dashboard: **Settings, AI**. Pick the
 service, paste your key, press **Find models** to choose from the service's own list, then **Save and test**. The
 key is kept in the data folder on your machine and is never shown again.
 
 If you prefer a file (or run a server), the same three things can go in `.env`. What is saved in the dashboard wins:
 
 ```ini
-CLIPKONTRAST_AI_PROVIDER=gemini
-CLIPKONTRAST_AI_MODELS=gemini-2.5-flash
-CLIPKONTRAST_AI_KEY=your-key-here
+CLIPFORGE_AI_PROVIDER=gemini
+CLIPFORGE_AI_MODELS=gemini-2.5-flash
+CLIPFORGE_AI_KEY=your-key-here
 ```
 
-| `CLIPKONTRAST_AI_PROVIDER` | Service | Where to get a key |
+| `CLIPFORGE_AI_PROVIDER` | Service | Where to get a key |
 |---|---|---|
 | `gemini` | Google Gemini | https://aistudio.google.com/apikey |
 | `openai` | OpenAI | https://platform.openai.com/api-keys |
@@ -144,9 +144,9 @@ CLIPKONTRAST_AI_KEY=your-key-here
 | `openrouter` | OpenRouter (many models, one key) | https://openrouter.ai/keys |
 | `anthropic` | Claude | https://console.anthropic.com |
 | `ollama` | A model on your own machine, no key | https://ollama.com |
-| `custom` | Any OpenAI-compatible address: also set `CLIPKONTRAST_AI_BASE_URL` | |
+| `custom` | Any OpenAI-compatible address: also set `CLIPFORGE_AI_BASE_URL` | |
 
-- `CLIPKONTRAST_AI_MODELS` is the model id exactly as the service names it. Model names change often, so check the
+- `CLIPFORGE_AI_MODELS` is the model id exactly as the service names it. Model names change often, so check the
   service's current list. Several ids separated by commas are tried in order, which gives you a fallback.
 - A fast, inexpensive model is the right choice. A one-hour video is read in about four requests.
 - You pay the AI service directly for what you use. The **AI usage** page in the app shows how many requests and
@@ -160,19 +160,19 @@ Everything is set through environment variables, normally in a `.env` file next 
 
 | Setting | What it is for |
 |---|---|
-| `CLIPKONTRAST_AI_PROVIDER`, `CLIPKONTRAST_AI_MODELS`, `CLIPKONTRAST_AI_KEY` | The AI that picks clips and writes titles (or set it in the dashboard) |
-| `CLIPKONTRAST_ACCOUNTS` | `1` makes everyone sign in. Use it on any server other people can reach |
+| `CLIPFORGE_AI_PROVIDER`, `CLIPFORGE_AI_MODELS`, `CLIPFORGE_AI_KEY` | The AI that picks clips and writes titles (or set it in the dashboard) |
+| `CLIPFORGE_ACCOUNTS` | `1` makes everyone sign in. Use it on any server other people can reach |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Optional: Sign in with Google, and connecting YouTube |
-| `CLIPKONTRAST_SMTP_*`, `CLIPKONTRAST_MAIL_FROM` | Optional: confirmation and password emails |
-| `CLIPKONTRAST_DATA` | Where videos, clips and the database are kept (default `./data`) |
+| `CLIPFORGE_SMTP_*`, `CLIPFORGE_MAIL_FROM` | Optional: confirmation and password emails |
+| `CLIPFORGE_DATA` | Where videos, clips and the database are kept (default `./data`) |
 
 `.env`, the `secrets/` folder and all user data are ignored by git. Keep keys there, never in the code.
 
 ## Admins
 
-This only matters with accounts switched on (`CLIPKONTRAST_ACCOUNTS=1`); without them you are the owner and can do
+This only matters with accounts switched on (`CLIPFORGE_ACCOUNTS=1`); without them you are the owner and can do
 everything. An account is an admin only when the database says so. No email address is special in the code and no web request
-can change a role. Do it on the machine that runs ClipKontrast:
+can change a role. Do it on the machine that runs ClipForge:
 
 ```bash
 python -m studio.admin grant you@example.com
@@ -197,20 +197,20 @@ assistants.
 
 ## Where your videos and clips are kept
 
-Everything ClipKontrast keeps is in one folder: videos, clips, recordings, creators, settings and the speech model. By
-default it is the `data` folder inside ClipKontrast. **Settings, Storage** shows the folder and how much room its drive
-has, opens it in one click, and lets you move it to another drive: choose the new folder, and ClipKontrast moves
-everything there the next time it starts. If the drive is nearly full, ClipKontrast says so and stops taking new videos
-until there is room. (`CLIPKONTRAST_DATA` in `.env` still works and takes priority.)
+Everything ClipForge keeps is in one folder: videos, clips, recordings, creators, settings and the speech model. By
+default it is the `data` folder inside ClipForge. **Settings, Storage** shows the folder and how much room its drive
+has, opens it in one click, and lets you move it to another drive: choose the new folder, and ClipForge moves
+everything there the next time it starts. If the drive is nearly full, ClipForge says so and stops taking new videos
+until there is room. (`CLIPFORGE_DATA` in `.env` still works and takes priority.)
 
 ## Updating
 
-ClipKontrast checks GitHub once a minute while it runs. When a newer version is out, the dashboard shows a notice
+ClipForge checks GitHub once a minute while it runs. When a newer version is out, the dashboard shows a notice
 within a minute or two (no restart needed), with what changed
 and how to update: ask your AI coding assistant to do it (the notice has a sentence to paste), or run
-`git pull && pip install -r requirements.txt` in the ClipKontrast folder and restart it (with Docker:
+`git pull && pip install -r requirements.txt` in the ClipForge folder and restart it (with Docker:
 `git pull && docker compose up -d --build`). Your `.env`, keys and clips are not touched. Only the two commit ids
-are sent to GitHub; set `CLIPKONTRAST_UPDATE_CHECK=0` to turn the check off.
+are sent to GitHub; set `CLIPFORGE_UPDATE_CHECK=0` to turn the check off.
 
 ## Deploy
 
@@ -241,7 +241,7 @@ queue tests against it, then removes it. It needs no keys and never touches real
 
 ## Security
 
-- With sign-in off, ClipKontrast listens on this computer only (`127.0.0.1`), refuses changes sent by other websites,
+- With sign-in off, ClipForge listens on this computer only (`127.0.0.1`), refuses changes sent by other websites,
   and only answers to its own address. Do not expose it to the internet that way: turn accounts on.
 - Passwords are stored only as salted scrypt hashes. Sessions are random tokens stored hashed; cookies are HTTP-only.
 - Every route works out who is asking from the session, never from the request, so users only reach their own data.

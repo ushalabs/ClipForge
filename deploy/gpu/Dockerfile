@@ -1,5 +1,5 @@
 # The speech-to-text machine: the same code, built for a graphics card (NVIDIA, CUDA 12).
-# Build from the project root:  docker build -f deploy/gpu/Dockerfile -t clipkontrast-asr .
+# Build from the project root:  docker build -f deploy/gpu/Dockerfile -t clipforge-asr .
 FROM python:3.11-slim
 
 RUN apt-get update \
@@ -18,9 +18,9 @@ COPY studio studio
 
 ENV N=/usr/local/lib/python3.11/site-packages/nvidia
 ENV LD_LIBRARY_PATH=$N/cublas/lib:$N/cudnn/lib:$N/cufft/lib:$N/curand/lib:$N/cuda_runtime/lib:$N/cuda_nvrtc/lib:$N/nvjitlink/lib \
-    CLIPKONTRAST_DATA=/data \
-    CLIPKONTRAST_ASR_PROVIDER=cuda \
-    CLIPKONTRAST_ASR_MODEL=sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-fp16 \
+    CLIPFORGE_DATA=/data \
+    CLIPFORGE_ASR_PROVIDER=cuda \
+    CLIPFORGE_ASR_MODEL=sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-fp16 \
     PYTHONUNBUFFERED=1
 VOLUME /data
 EXPOSE 9000

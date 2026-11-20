@@ -21,7 +21,7 @@ CLAUDE.local.md
 .vscode/
 .idea/
 *.bat
-!Start-ClipKontrast-Windows.bat
+!Start-ClipForge-Windows.bat
 Thumbs.db
 .DS_Store
 

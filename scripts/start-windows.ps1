@@ -1,6 +1,6 @@
-# ClipKontrast - one-click start for Windows.
+# ClipForge - one-click start for Windows.
 # First run: installs Python and ffmpeg if missing (with winget), sets up a private Python folder (.venv)
-# and the packages. Every run: starts ClipKontrast and opens it in your browser.
+# and the packages. Every run: starts ClipForge and opens it in your browser.
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
@@ -13,14 +13,14 @@ function Refresh-Path {
 function Has-Winget { [bool](Get-Command winget -ErrorAction SilentlyContinue) }
 
 Write-Host ""
-Say "=== ClipKontrast ===" "Green"
+Say "=== ClipForge ===" "Green"
 Write-Host ""
 
 # ---- Long folder paths break the speech model on Windows (260 character limit)
 if ($Root.Length -gt 80) {
     Say "This folder's path is long:" "Yellow"
     Say "  $Root" "Yellow"
-    Say "If the speech model fails to load, move the folder to C:\ClipKontrast and run this again." "Yellow"
+    Say "If the speech model fails to load, move the folder to C:\ClipForge and run this again." "Yellow"
     Write-Host ""
 }
 
@@ -47,12 +47,12 @@ if ($Py.Count -eq 0) {
     winget install -e --id Python.Python.3.12 --scope user --accept-package-agreements --accept-source-agreements
     Refresh-Path
     $Py = @(Find-Python)
-    if ($Py.Count -eq 0) { Fail "Python was installed but Windows has not picked it up yet. Close this window and double-click Start-ClipKontrast-Windows.bat again." }
+    if ($Py.Count -eq 0) { Fail "Python was installed but Windows has not picked it up yet. Close this window and double-click Start-ClipForge-Windows.bat again." }
 }
 $PyExe = $Py[0]; $PyArgs = @($Py | Select-Object -Skip 1)
 Say ("Python: " + (& $PyExe @PyArgs --version)) "Gray"
 
-# ---- ffmpeg (ClipKontrast also finds winget's install folder by itself, so no PATH refresh is needed)
+# ---- ffmpeg (ClipForge also finds winget's install folder by itself, so no PATH refresh is needed)
 $haveFfmpeg = [bool](Get-Command ffmpeg -ErrorAction SilentlyContinue) -or
     (Test-Path "$env:LOCALAPPDATA\Microsoft\WinGet\Links\ffmpeg.exe") -or
     [bool](Get-ChildItem "$env:LOCALAPPDATA\Microsoft\WinGet\Packages" -Filter "Gyan.FFmpeg*" -Directory -ErrorAction SilentlyContinue)
@@ -62,7 +62,7 @@ if (-not $haveFfmpeg) {
         winget install -e --id Gyan.FFmpeg --accept-package-agreements --accept-source-agreements
         Refresh-Path
     } else {
-        Say "winget is not available: ClipKontrast will show how to install ffmpeg in the dashboard." "Yellow"
+        Say "winget is not available: ClipForge will show how to install ffmpeg in the dashboard." "Yellow"
     }
 }
 
@@ -86,10 +86,10 @@ if (-not (Test-Path $Stamp) -or (Get-Content $Stamp -Raw).Trim() -ne $Hash) {
 
 # ---- Start
 Write-Host ""
-Say "Starting ClipKontrast. The first start downloads the speech model (about 480 MB, once)." "Green"
-Say "Your browser opens by itself. Keep this window open while you use ClipKontrast; close it to stop." "Green"
+Say "Starting ClipForge. The first start downloads the speech model (about 480 MB, once)." "Green"
+Say "Your browser opens by itself. Keep this window open while you use ClipForge; close it to stop." "Green"
 Write-Host ""
-$env:CLIPKONTRAST_OPEN_BROWSER = "1"
+$env:CLIPFORGE_OPEN_BROWSER = "1"
 $env:PYTHONWARNINGS = "ignore::DeprecationWarning"
 
 # ---- Already running? Then just open it. Port taken by another program? Then use the next free one.
@@ -97,17 +97,17 @@ function Port-Free($p) {
     try { $l = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Loopback, $p); $l.Start(); $l.Stop(); return $true }
     catch { return $false }
 }
-function Is-ClipKontrast($p) {
+function Is-ClipForge($p) {
     try {
         $r = Invoke-WebRequest -UseBasicParsing -TimeoutSec 3 -Uri "http://127.0.0.1:$p/app"
-        return ($r.Content -match "ClipKontrast")
+        return ($r.Content -match "ClipForge")
     } catch { return $false }
 }
 $Port = 8765
-if ($env:CLIPKONTRAST_PORT) { $Port = [int]$env:CLIPKONTRAST_PORT }
+if ($env:CLIPFORGE_PORT) { $Port = [int]$env:CLIPFORGE_PORT }
 for ($p = $Port; $p -lt $Port + 10; $p++) {
-    if (Is-ClipKontrast $p) {
-        Say "ClipKontrast is already running (in another window). Opening it in your browser." "Green"
+    if (Is-ClipForge $p) {
+        Say "ClipForge is already running (in another window). Opening it in your browser." "Green"
         Start-Process "http://127.0.0.1:$p/app"
         exit 0
     }
@@ -117,5 +117,5 @@ while (-not (Port-Free $Port)) {
     $Port++
     if ($Port -gt 8800) { Fail "No free port found between 8765 and 8800. Restart the computer and try again." }
 }
-$env:CLIPKONTRAST_PORT = "$Port"
+$env:CLIPFORGE_PORT = "$Port"
 & $VPy -m studio.server

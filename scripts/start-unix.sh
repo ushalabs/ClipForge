@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# ClipKontrast - one-click start for Mac and Linux.
+# ClipForge - one-click start for Mac and Linux.
 # First run: checks Python and ffmpeg (installs them with Homebrew on a Mac when possible), sets up a private
-# Python folder (.venv) and the packages. Every run: starts ClipKontrast and opens it in your browser.
+# Python folder (.venv) and the packages. Every run: starts ClipForge and opens it in your browser.
 set -e
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
 say()  { printf "  %s\n" "$1"; }
 fail() { printf "\n  \033[31m%s\033[0m\n\n" "$1"; exit 1; }
-echo; say "=== ClipKontrast ==="; echo
+echo; say "=== ClipForge ==="; echo
 
 if [ "$(uname)" = "Darwin" ] && [ -x /opt/homebrew/bin/brew ]; then eval "$(/opt/homebrew/bin/brew shellenv)"; fi
 if [ "$(uname)" = "Darwin" ] && [ -x /usr/local/bin/brew ]; then eval "$(/usr/local/bin/brew shellenv)"; fi
@@ -64,18 +64,18 @@ if [ ! -f .venv/requirements.sha ] || [ "$(cat .venv/requirements.sha)" != "$HAS
 fi
 
 echo
-say "Starting ClipKontrast. The first start downloads the speech model (about 480 MB, once)."
-say "Your browser opens by itself. Keep this window open while you use ClipKontrast; close it to stop."
+say "Starting ClipForge. The first start downloads the speech model (about 480 MB, once)."
+say "Your browser opens by itself. Keep this window open while you use ClipForge; close it to stop."
 echo
-export CLIPKONTRAST_OPEN_BROWSER=1
+export CLIPFORGE_OPEN_BROWSER=1
 export PYTHONWARNINGS="ignore::DeprecationWarning"
 
 # Already running? Then just open it. Port taken by another program? Then use the next free one.
 open_url() { if command -v open >/dev/null 2>&1; then open "$1"; elif command -v xdg-open >/dev/null 2>&1; then xdg-open "$1"; fi; }
-PORT="${CLIPKONTRAST_PORT:-8765}"
+PORT="${CLIPFORGE_PORT:-8765}"
 for p in $(seq "$PORT" $((PORT + 9))); do
-  if .venv/bin/python -c "import sys,urllib.request; sys.exit(0 if b'ClipKontrast' in urllib.request.urlopen('http://127.0.0.1:$p/app', timeout=3).read() else 1)" 2>/dev/null; then
-    say "ClipKontrast is already running (in another window). Opening it in your browser."
+  if .venv/bin/python -c "import sys,urllib.request; sys.exit(0 if b'ClipForge' in urllib.request.urlopen('http://127.0.0.1:$p/app', timeout=3).read() else 1)" 2>/dev/null; then
+    say "ClipForge is already running (in another window). Opening it in your browser."
     open_url "http://127.0.0.1:$p/app"; exit 0
   fi
 done
@@ -84,5 +84,5 @@ while ! .venv/bin/python -c "import socket,sys; s=socket.socket(); s.bind(('127.
   PORT=$((PORT + 1))
   [ "$PORT" -le 8800 ] || fail "No free port found between 8765 and 8800."
 done
-export CLIPKONTRAST_PORT="$PORT"
+export CLIPFORGE_PORT="$PORT"
 exec .venv/bin/python -m studio.server

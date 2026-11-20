@@ -1,4 +1,4 @@
-# ClipKontrast: one image with the web server, the clip pipeline and ffmpeg.
+# ClipForge: one image with the web server, the clip pipeline and ffmpeg.
 FROM python:3.11-slim
 
 RUN apt-get update \
@@ -13,10 +13,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY studio studio
 COPY web web
 
-ENV CLIPKONTRAST_DATA=/data \
-    CLIPKONTRAST_HOST=0.0.0.0 \
-    CLIPKONTRAST_PORT=8765 \
-    CLIPKONTRAST_TRUST_PROXY=1 \
+ENV CLIPFORGE_DATA=/data \
+    CLIPFORGE_HOST=0.0.0.0 \
+    CLIPFORGE_PORT=8765 \
+    CLIPFORGE_TRUST_PROXY=1 \
     PYTHONUNBUFFERED=1
 VOLUME /data
 EXPOSE 8765
