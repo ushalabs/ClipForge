@@ -79,7 +79,8 @@ def install_fonts():
 
 
 LAYOUTS = {"blur": "Full frame + blurred fill", "zoom": "Zoomed in + blurred fill", "crop": "Fill the screen (centre crop)",
-           "gameplay": "Gameplay fills the screen, facecam in the corner"}
+           "gameplay": "Gameplay fills the screen, facecam in the corner",
+           "split": "Split screen (two speakers, top and bottom)"}
 
 
 def _ts(t):
@@ -120,7 +121,7 @@ def geometry(src_w, src_h, layout):
     else:
         fg_h = H
     top = (H - fg_h) // 2
-    if layout in ("crop", "gameplay"):
+    if layout in ("crop", "gameplay", "split"):
         return layout, fg_h, 300, 1380
     return layout, fg_h, max(230, top - 190), min(1640, top + fg_h + 180)
 
@@ -243,6 +244,12 @@ def _filter(layout, fg_h, facecam=None):
                     f"[base]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1[b];"
                     f"[fc]crop={fw}:{fh}:{fx}:{fy},scale={PIP_W}:{pip_h},setsar=1[p];"
                     f"[b][p]overlay={W - PIP_W - PIP_MARGIN}:{PIP_MARGIN}[v0];")
+    if layout == "split":
+        half_h = H // 2
+        return (f"[0:v]fps={config.OUT_FPS},split=2[left][right];"
+                f"[left]crop=iw/2:ih:0:0,scale={W}:{half_h}:force_original_aspect_ratio=increase,crop={W}:{half_h},setsar=1[top];"
+                f"[right]crop=iw/2:ih:iw/2:0,scale={W}:{half_h}:force_original_aspect_ratio=increase,crop={W}:{half_h},setsar=1[bot];"
+                f"[top][bot]vstack=inputs=2[v0];")
     if layout == "crop" or (layout == "gameplay" and not facecam):
         return f"[0:v]fps={config.OUT_FPS},scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1[v0];"
     return (f"[0:v]fps={config.OUT_FPS},split=2[a][b];"
