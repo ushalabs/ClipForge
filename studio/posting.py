@@ -118,7 +118,23 @@ def _post(p):
         creator = creators.get(job["creator"]) or dict(creators.DEFAULTS, name="clips")
         title, cap = clip.get("title") or clip.get("hook") or "Clip", _caption(clip, creator)
         if acc["platform"] == "youtube":
-            rid, url = accounts.youtube_upload(acc, path, title, cap + "\n\n#Shorts", clip.get("hashtags", []), creator["privacy"])
+            is_short = creator.get("yt_shorts", True)
+            yt_desc = cap
+            src = job.get("source") or {}
+            if creator.get("yt_link_source", True) and src.get("type") == "url" and "youtu" in str(src.get("url", "")):
+                yt_desc = (yt_desc + f"\n\nFull video: {src['url']}").strip()
+            if is_short:
+                yt_desc = (yt_desc + "\n\n#Shorts").strip()
+            pub_at = ""
+            if creator.get("yt_native_schedule") and p["due_at"] > time.time() + 120:
+                pub_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(p["due_at"]))
+            rid, url = accounts.youtube_upload(
+                acc, path, title, yt_desc, clip.get("hashtags", []), creator["privacy"],
+                category_id=creator.get("yt_category_id", "20"),
+                language=creator.get("yt_language", ""),
+                made_for_kids=creator.get("yt_made_for_kids", False),
+                publish_at=pub_at, is_short=is_short,
+            )
         elif acc["platform"] == "instagram":
             rid, url = accounts.instagram_upload(acc, path, f"{title}\n\n{cap}", job["id"])
         elif acc["platform"] == "tiktok":
@@ -140,10 +156,29 @@ def _post(p):
     _mirror(p)
 
 
+def _is_due(p, now):
+    if p["status"] != "scheduled":
+        return False
+    if p["due_at"] <= now:
+        return True
+    if p.get("platform") == "youtube":
+        c = creators.get(p.get("creator")) or {}
+        if c.get("yt_native_schedule") and p["due_at"] > now + 120:
+            return True
+    return False
+
+
 def _run():
     while True:
         time.sleep(15)
-        due = [p for p in list(_posts) if p["status"] == "scheduled" and p["due_at"] <= time.time() and p.get("user")]
+        now = time.time()
+        due = []
+        for p in list(_posts):
+            if not p.get("user") or p["status"] != "scheduled":
+                continue
+            with ctx.as_user(p["user"]):
+                if _is_due(p, now):
+                    due.append(p)
         for p in due:
             try:
                 with ctx.as_user(p["user"]):
@@ -162,10 +197,13 @@ def _stats_for(recent):
     for aid in {p["account"] for p in recent if p["platform"] == "youtube"}:
         acc = accounts.get(aid)
         if acc:
-            views = accounts.youtube_views(acc, [p["remote_id"] for p in recent if p["account"] == aid])
+            stats = accounts.youtube_stats(acc, [p["remote_id"] for p in recent if p["account"] == aid])
             for p in recent:
-                if p["account"] == aid and p["remote_id"] in views:
-                    p["views"] = views[p["remote_id"]]
+                if p["account"] == aid and p["remote_id"] in stats:
+                    s = stats[p["remote_id"]]
+                    p["views"] = s["views"]
+                    p["likes"] = s["likes"]
+                    p["comments"] = s["comments"]
     for p in recent:
         acc = accounts.get(p["account"]) if p["platform"] == "instagram" else None
         if acc:

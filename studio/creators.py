@@ -21,7 +21,9 @@ DEFAULTS = {"name": "", "channel": "", "style": "bounce", "layout": "blur", "cap
             "game": "",
             "trigger_words": "clip that, clip it",
             "autopost": False, "accounts": [], "post_min_score": 75, "post_gap_min": 45, "daily_cap": 6,
-            "privacy": "public", "post_footer": "", "rate_per_1k": 0.0, "channels": {}}
+            "privacy": "public", "post_footer": "", "rate_per_1k": 0.0, "channels": {},
+            "yt_shorts": True, "yt_category_id": "20", "yt_language": "", "yt_made_for_kids": False,
+            "yt_link_source": True, "yt_native_schedule": False}
 PLATFORMS = ("youtube", "twitch", "kick")
 
 
@@ -67,8 +69,13 @@ def _clean(data: dict) -> dict:
         if k in NUMERIC:
             lo, hi = NUMERIC[k]
             v = max(lo, min(hi, int(float(v))))
-        elif k in ("auto_watch", "auto_watch_vods", "autopost", "ai_only_on_spike"):
+        elif k in ("auto_watch", "auto_watch_vods", "autopost", "ai_only_on_spike",
+                   "yt_shorts", "yt_made_for_kids", "yt_link_source", "yt_native_schedule"):
             v = bool(v)
+        elif k == "yt_category_id":
+            v = str(v).strip()[:10] if str(v).strip().isdigit() else "20"
+        elif k == "yt_language":
+            v = str(v).strip()[:12]
         elif k == "seen_vods":
             v = [str(x)[:40] for x in v][:50] if isinstance(v, list) else []
         elif k == "channels":

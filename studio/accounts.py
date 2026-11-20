@@ -338,11 +338,33 @@ def _yt_token(acc) -> str:
     return acc["access_token"]
 
 
-def youtube_upload(acc, path: Path, title: str, description: str, tags: list, privacy: str):
+_yt_quota = {"day": "", "units": 0}
+YT_DAILY_QUOTA = 10000
+YT_UPLOAD_COST = 1600
+
+
+def youtube_quota_used() -> dict:
+    """Today's estimated YouTube Data API units used by uploads on this server."""
+    day = time.strftime("%Y-%m-%d", time.gmtime())
+    if _yt_quota["day"] != day:
+        _yt_quota.update(day=day, units=0)
+    return {"day": day, "used": _yt_quota["units"], "limit": YT_DAILY_QUOTA}
+
+
+def youtube_upload(acc, path: Path, title: str, description: str, tags: list, privacy: str,
+                   category_id: str = "20", language: str = "", made_for_kids: bool = False,
+                   publish_at: str = "", is_short: bool = True):
     token = _yt_token(acc)
-    meta = {"snippet": {"title": re.sub(r"[<>]", "", title)[:100] or "Clip", "description": re.sub(r"[<>]", "", description)[:4900],
-                        "tags": tags[:15], "categoryId": "20"},
-            "status": {"privacyStatus": privacy, "selfDeclaredMadeForKids": False}}
+    snippet = {"title": re.sub(r"[<>]", "", title)[:100] or "Clip",
+               "description": re.sub(r"[<>]", "", description)[:4900],
+               "tags": tags[:15], "categoryId": str(category_id or "20")}
+    if language:
+        snippet["defaultLanguage"] = str(language)[:12]
+    status = {"privacyStatus": "private" if publish_at else privacy,
+              "selfDeclaredMadeForKids": bool(made_for_kids)}
+    if publish_at:
+        status["publishAt"] = publish_at
+    meta = {"snippet": snippet, "status": status}
     size = path.stat().st_size
     start = _check(httpx.post("https://www.googleapis.com/upload/youtube/v3/videos",
                               params={"uploadType": "resumable", "part": "snippet,status"}, json=meta,
@@ -352,18 +374,30 @@ def youtube_upload(acc, path: Path, title: str, description: str, tags: list, pr
         done = _check(httpx.put(start.headers["Location"], content=f.read(),
                                 headers={"Authorization": f"Bearer {token}", "Content-Type": "video/mp4"}, timeout=900),
                       "Uploading to YouTube").json()
-    return done["id"], f"https://www.youtube.com/shorts/{done['id']}"
+    q = youtube_quota_used()
+    _yt_quota["units"] = q["used"] + YT_UPLOAD_COST
+    vid = done["id"]
+    url = f"https://www.youtube.com/shorts/{vid}" if is_short else f"https://www.youtube.com/watch?v={vid}"
+    return vid, url
 
 
-def youtube_views(acc, ids: list) -> dict:
+def youtube_stats(acc, ids: list) -> dict:
+    """Views, likes and comments for up to 50 YouTube videos at a time."""
     out = {}
     for i in range(0, len(ids), 50):
         r = _check(httpx.get("https://www.googleapis.com/youtube/v3/videos",
                              params={"part": "statistics", "id": ",".join(ids[i:i + 50])},
-                             headers={"Authorization": f"Bearer {_yt_token(acc)}"}, timeout=30), "Reading YouTube views").json()
+                             headers={"Authorization": f"Bearer {_yt_token(acc)}"}, timeout=30), "Reading YouTube stats").json()
         for it in r.get("items", []):
-            out[it["id"]] = int(it["statistics"].get("viewCount", 0))
+            st = it.get("statistics") or {}
+            out[it["id"]] = {"views": int(st.get("viewCount", 0)),
+                             "likes": int(st.get("likeCount", 0)),
+                             "comments": int(st.get("commentCount", 0))}
     return out
+
+
+def youtube_views(acc, ids: list) -> dict:
+    return {k: v["views"] for k, v in youtube_stats(acc, ids).items()}
 
 
 # ------------------------------------------------------------------ Instagram (Instagram Login, professional accounts)
