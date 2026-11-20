@@ -56,41 +56,6 @@ It supports:
 
 ---
 
-## Quick Start
-
-### Prerequisites
-- **Python 3.10+**
-- **FFmpeg** (`winget install Gyan.FFmpeg` on Windows, `brew install ffmpeg` on macOS, `sudo apt install ffmpeg` on Linux)
-
-### Run Locally
-
-> **Windows note:** Place the repository in a short path such as `C:\ClipForge` so `sherpa-onnx` and `ffmpeg` never hit the Windows 260-character path limit.
-
-```bash
-git clone https://github.com/ushalabs/ClipForge.git C:\ClipForge
-cd C:\ClipForge
-pip install -r requirements.txt
-python -m studio.server
-```
-
-On first launch, ClipForge downloads the speech model (~480 MB) automatically (or run `python -m studio.fetch_model` ahead of time). Open `http://127.0.0.1:8765` in your browser.
-
-One-click launchers are also included:
-- **Windows:** `Start-ClipForge-Windows.bat`
-- **macOS:** `Start-ClipForge-Mac.command`
-- **Linux:** `bash start-linux.sh`
-
-### Run with Docker
-
-```bash
-cp .env.example .env
-docker compose up -d --build
-```
-
-See [DEPLOY.md](DEPLOY.md) for reverse-proxy configs (Caddy, Traefik, Nginx), PostgreSQL setup, OAuth app registration, and remote GPU ASR workers.
-
----
-
 ## AI Providers
 
 Configure your AI provider in the dashboard (**Settings → AI**) or via `.env`:
@@ -113,36 +78,6 @@ CLIPFORGE_AI_KEY=your-api-key
 | `custom` | Custom OpenAI-compatible | Set `CLIPFORGE_AI_BASE_URL` |
 
 Multiple comma-separated model IDs are tried in order as automatic fallbacks.
-
----
-
-## Architecture
-
-| Module | Responsibility |
-|---|---|
-| `studio/server.py` | FastAPI routes, request gate, security headers, static UI serving |
-| `studio/config.py` | Environment and storage configuration |
-| `studio/db.py` | SQLAlchemy Core schema (SQLite WAL or PostgreSQL) |
-| `studio/auth.py` | Scrypt authentication, Google OAuth, sessions, rate limiting |
-| `studio/jobs.py` | Fair per-user job queue and VOD processing pipeline |
-| `studio/live.py` | Rolling-buffer live stream recording and highlight detection |
-| `studio/transcribe.py` | Local `sherpa-onnx` ASR pool and remote worker client |
-| `studio/asr_worker.py` | Standalone GPU transcription microservice |
-| `studio/brain.py` | Clip selection prompts, loudness/chat/heatmap scoring, sanitization |
-| `studio/render.py` | FFmpeg vertical composition, ASS word captions, hook overlays |
-| `studio/facecam.py` | Webcam box detection for `gameplay` layout |
-| `studio/posting.py` | Scheduled upload queue, quota tracking, and stats polling |
-| `web/index.html` | Single-file application UI (no build step) |
-
----
-
-## Testing
-
-```bash
-python tests/run.py
-```
-
-The test runner starts an isolated server instance on a temporary data directory and spare port (no external API keys required).
 
 ---
 
