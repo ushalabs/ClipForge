@@ -73,6 +73,14 @@ To build a standalone desktop bundle:
 python scripts/build-desktop.py
 ```
 
+To build a Windows NSIS installer (`dist/ClipForge-v1.0.0-Setup-x64.exe`):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File packaging\build_setup.ps1
+```
+
+Pass `-BundleFfmpeg` if you want to bundle `ffmpeg` and `ffprobe` inside the setup executable.
+
 For browser/server mode instead of the desktop window, run `python -m studio.server` (or set `CLIPFORGE_BROWSER_ONLY=1` with the launchers).
 
 ---
