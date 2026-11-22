@@ -2149,13 +2149,20 @@ function hbars(rows) {
 }
 function drawUsage() {
   const k = S.usage, box = $("#usage"); if (!k || !box) return;
-  box.innerHTML = `<div class="tstrip" style="margin:-18px -20px 24px;padding:0 20px">
-      <span class="tstat">Service <b>${k.ready ? esc(k.provider || "Ready") : "Loudness mode"}</b></span>
-      ${k.ready && k.model ? `<span class="tstat">Model <b>${esc(k.model)}</b></span>` : ""}
-      <span class="tstat">Calls today <b>${(k.today_calls || 0).toLocaleString()}</b></span>
-      <span class="tstat">Tokens today <b>${fmtK(k.today_tokens)}</b></span>
-      <span class="tstat">Total calls <b>${(k.calls_total || 0).toLocaleString()}</b></span>
-      <span class="tstat">Total tokens <b>${fmtK(k.tokens_total)}</b></span>
+  const kpi = (val, lbl, sub = "") => `<div style="display:flex;flex-direction:column;gap:4px;min-width:0;padding-right:20px;border-right:1px solid var(--line)">
+      <span style="font-size:12px;font-weight:500;color:var(--dim);text-transform:uppercase;letter-spacing:.04em">${lbl}</span>
+      <b style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${val}</b>
+      ${sub ? `<span style="font-size:12px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sub}</span>` : ""}
+    </div>`;
+  box.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;padding:6px 0 24px;margin-bottom:24px;border-bottom:1px solid var(--line)">
+      ${kpi(k.ready ? esc(k.provider || "Ready") : "Loudness mode", "Service", k.ready && k.model ? esc(k.model) : "")}
+      ${kpi((k.today_calls || 0).toLocaleString(), "Calls today")}
+      ${kpi(fmtK(k.today_tokens), "Tokens today")}
+      ${kpi((k.calls_total || 0).toLocaleString(), "Total calls")}
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+        <span style="font-size:12px;font-weight:500;color:var(--dim);text-transform:uppercase;letter-spacing:.04em">Total tokens</span>
+        <b style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.15">${fmtK(k.tokens_total)}</b>
+      </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:28px">
       <div><div class="sec-bar"><h2>Tokens per day</h2><span class="sub">Last 30 days</span></div>${tokenChart(k.daily || [])}</div>
