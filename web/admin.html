@@ -11,10 +11,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --brand:#C6F432;--brand-press:#B5E31F;--brand-ink:#1A2100;--brand-soft:#F5FDE0;--brand-line:#E3F7A8;--brand-deep:#4E6B00;
-  --frame:#1E1612;--frame-2:#2C221D;--frame-line:rgba(255,255,255,.08);--frame-text:#F4EEEA;--frame-dim:#A99A91;
-  --bg:#FFFFFF;--muted:#F7F4F1;--line:#EEE8E4;--line-2:#E1D9D3;
-  --text:#211813;--dim:#6D6159;--faint:#A0948C;
+  --brand:#0EA5E9;--brand-press:#0284C7;--brand-ink:#04131B;--brand-soft:#E0F2FE;--brand-line:#BAE6FD;--brand-deep:#0369A1;
+  --frame:#0F1012;--frame-2:#16171A;--frame-line:rgba(255,255,255,.08);--frame-text:#F4F4F5;--frame-dim:#A1A1AA;
+  --bg:#FFFFFF;--muted:#F4F4F5;--line:#E4E4E7;--line-2:#D4D4D8;
+  --text:#090A0C;--dim:#52525B;--faint:#71717A;
   --good:#0F8A57;--good-soft:#E6F6EE;--bad:#D3343F;--bad-soft:#FDECEE;
   --r-lg:16px;--r:12px;--r-sm:8px;
   color-scheme:light;
@@ -59,14 +59,14 @@ main{background:var(--bg);margin:8px 8px 8px 0;border-radius:var(--r-lg);height:
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:38px;padding:0 14px;border-radius:var(--r);border:1px solid var(--line-2);background:#fff;color:var(--text);cursor:pointer;text-decoration:none;white-space:nowrap;font-weight:600;transition:background-color .15s ease,border-color .15s ease,color .15s ease}
 .btn:hover{background:var(--muted)}
 .btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
-.btn.primary:hover{background:#D4FA5A;border-color:#D4FA5A}
-.btn.primary:disabled{background:#F3E7DD;border-color:#F3E7DD;color:#B9A597;cursor:not-allowed}
+.btn.primary:hover{background:#38BDF8;border-color:#38BDF8}
+.btn.primary:disabled{background:#E4E4E7;border-color:#E4E4E7;color:#71717A;cursor:not-allowed}
 .btn.danger{background:var(--bad-soft);border-color:transparent;color:var(--bad)}
-.btn.danger:hover{background:#FADDE0}
+.btn.danger:hover{background:#FEE2E2}
 .btn.sm{height:32px;padding:0 11px;font-size:13px;gap:6px}
 .btn.sm svg{width:16px;height:16px}
 input[type=text],input[type=search],input[type=number],textarea{height:38px;padding:0 12px;border-radius:var(--r);border:1px solid var(--line-2);background:#fff;width:100%;transition:border-color .15s ease}
-input:hover,textarea:hover{border-color:#CFC4BC}
+input:hover,textarea:hover{border-color:#A1A1AA}
 input:focus,textarea:focus{outline:0;border-color:var(--brand)}
 label.f{display:flex;flex-direction:column;gap:7px;font-size:12px;color:var(--dim);font-weight:600}
 
@@ -109,18 +109,18 @@ td{padding:12px 10px;border-top:1px solid var(--line);vertical-align:middle}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 td.acts{text-align:right;white-space:nowrap}
 tr.u{cursor:pointer}
-tr.u:hover>td{background:#FCFAF8}
+tr.u:hover>td{background:#F8FAFC}
 td .em{font-size:12px;color:var(--dim);overflow-wrap:anywhere}
 td b{color:var(--brand-ink);font-weight:600}
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
 .toolbar input{max-width:340px}
 .seg{display:flex;gap:2px;padding:3px;background:var(--muted);border-radius:11px}
 .seg button{height:32px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:var(--dim);font-size:13px;font-weight:600;cursor:pointer;transition:background-color .15s ease,color .15s ease}
-.seg button:hover{background:#EDE3DB;color:var(--text)}
+.seg button:hover{background:#E4E4E7;color:var(--text)}
 .seg button.on{background:var(--brand);color:var(--brand-ink)}
 
 dialog{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:var(--r-lg);padding:0;max-width:calc(100vw - 32px)}
-dialog::backdrop{background:rgba(14,12,11,.42)}
+dialog::backdrop{background:rgba(15,16,18,.48)}
 .dlg{padding:24px;width:460px;max-width:100%;display:flex;flex-direction:column;gap:14px}
 .dlg.wide{width:720px;max-height:calc(100vh - 48px);overflow:auto}
 .dlg h2{font-size:18px;font-weight:600;color:var(--brand-ink)}
@@ -130,7 +130,7 @@ dialog::backdrop{background:rgba(14,12,11,.42)}
 .facts div{background:var(--muted);border-radius:var(--r-sm);padding:10px 12px}
 .facts b{display:block;font-size:17px;color:var(--brand-ink);font-variant-numeric:tabular-nums}
 .facts span{font-size:12px;color:var(--dim)}
-.note{background:var(--brand-soft);color:#3F5600;border-radius:var(--r-sm);padding:10px 12px;font-size:13px}
+.note{background:var(--brand-soft);color:var(--brand-deep);border-radius:var(--r-sm);padding:10px 12px;font-size:13px}
 #toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:50}
 .toast{background:var(--frame);color:var(--frame-text);border:1px solid var(--frame-2);border-radius:var(--r);padding:12px 16px;max-width:380px;display:flex;gap:10px;align-items:center;font-weight:500}
 .toast::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--brand);flex:none}

@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ClipForge Setup Guide</title>
-<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCIgdmlld0JveD0iMCAwIDIyMCAyMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAwKSI+PHJlY3Qgd2lkdGg9IjIyMC4wIiBoZWlnaHQ9IjIyMC4wIiByeD0iNTYuMCIgZmlsbD0iIzExMTIwOCIvPjxyZWN0IHg9IjUwLjAiIHk9IjUwLjAiIHdpZHRoPSIzNC4wIiBoZWlnaHQ9IjEyMC4wIiByeD0iMTAuMCIgZmlsbD0iI0M2RjQzMiIvPjxwYXRoIGQ9Ik0xMDAuMCA2Mi4wUTEwMC4wIDUwLjAgMTExLjAgNTYuMEwxNzAuMCAxMDAuMFExODAuMCAxMTAuMCAxNzAuMCAxMjAuMEwxMTEuMCAxNjQuMFExMDAuMCAxNzAuMCAxMDAuMCAxNTguMFoiIGZpbGw9IiNGRkZGRkYiLz48L2c+PC9zdmc+Cg==">
+<link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCIgdmlld0JveD0iMCAwIDIyMCAyMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAwKSI+PHJlY3Qgd2lkdGg9IjIyMC4wIiBoZWlnaHQ9IjIyMC4wIiByeD0iNTYuMCIgZmlsbD0iIzBCMTExNiIvPjxyZWN0IHg9IjUwLjAiIHk9IjUwLjAiIHdpZHRoPSIzNC4wIiBoZWlnaHQ9IjEyMC4wIiByeD0iMTAuMCIgZmlsbD0iIzBFQTVFOSIvPjxwYXRoIGQ9Ik0xMDAuMCA2Mi4wUTEwMC4wIDUwLjAgMTExLjAgNTYuMEwxNzAuMCAxMDAuMFExODAuMCAxMTAuMCAxNzAuMCAxMjAuMEwxMTEuMCAxNjQuMFExMDAuMCAxNzAuMCAxMDAuMCAxNTguMFoiIGZpbGw9IiNGRkZGRkYiLz48L2c+PC9zdmc+">
 <style>
-:root{--lime:#C6F432;--ink:#111208;--soft:#F5FDE0;--line:#E6EBD8;--dim:#5B6150;--deep:#3F5600}
+:root{--brand:#0EA5E9;--brand-ink:#04131B;--ink:#0F1012;--soft:#E0F2FE;--line:#E4E4E7;--dim:#52525B;--deep:#0369A1}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,"Segoe UI",system-ui,-apple-system,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.6;font-size:16px}
 .wrap{max-width:860px;margin:0 auto;padding:0 24px}
@@ -14,37 +14,37 @@ header{background:var(--ink);color:#fff;padding:44px 0 40px}
 .brand{display:flex;align-items:center;gap:14px}
 .brand img{width:56px;height:56px}
 .brand b{font-size:30px;letter-spacing:-.02em}
-.brand b span{background:var(--lime);color:var(--ink);border-radius:8px;padding:0 8px;margin-left:6px}
+.brand b span{background:var(--brand);color:var(--brand-ink);border-radius:8px;padding:0 8px;margin-left:6px}
 header h1{font-size:40px;line-height:1.15;margin:26px 0 10px;letter-spacing:-.02em}
-header p{color:#C9CDBE;margin:0;font-size:18px}
+header p{color:#A1A1AA;margin:0;font-size:18px}
 .by{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.by .lbl{color:#C9CDBE}
-.tag{display:inline-flex;align-items:center;gap:8px;background:var(--lime);color:var(--ink);font-weight:700;border-radius:999px;padding:6px 14px;text-decoration:none}
+.by .lbl{color:#A1A1AA}
+.tag{display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:var(--brand-ink);font-weight:700;border-radius:999px;padding:6px 14px;text-decoration:none}
 .tag.alt{background:#fff}
 .tag svg{width:18px;height:18px}
 main{padding:12px 0 40px}
 h2{font-size:26px;margin:44px 0 12px;letter-spacing:-.01em}
 h3{font-size:19px;margin:26px 0 8px}
 .step{display:flex;gap:16px;margin:30px 0 0}
-.num{flex:none;width:40px;height:40px;border-radius:12px;background:var(--lime);font-weight:800;display:grid;place-items:center;font-size:18px}
+.num{flex:none;width:40px;height:40px;border-radius:12px;background:var(--brand);color:var(--brand-ink);font-weight:800;display:grid;place-items:center;font-size:18px}
 .step > .body{flex:1;min-width:0}
 .step h3{margin:6px 0 6px}
-.box{background:var(--soft);border:1px solid #E3F7A8;border-radius:14px;padding:14px 18px;margin:14px 0}
+.box{background:var(--soft);border:1px solid #BAE6FD;border-radius:14px;padding:14px 18px;margin:14px 0}
 .warn{background:#FFF8E1;border:1px solid #F5E2A0;border-radius:14px;padding:14px 18px;margin:14px 0}
-code,kbd{font-family:ui-monospace,Consolas,monospace;background:#F1F3EC;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:.92em}
+code,kbd{font-family:ui-monospace,Consolas,monospace;background:#F4F4F5;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:.92em}
 figure{margin:16px 0 0}
 figure img{width:100%;border-radius:12px;border:1px solid var(--line);display:block}
 figcaption{color:var(--dim);font-size:14px;margin-top:6px}
 table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}
 th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{background:#F7F8F3}
+th{background:#F4F4F5}
 ul,ol{padding-left:22px} li{margin:4px 0}
 .os{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .card{border:1px solid var(--line);border-radius:14px;padding:16px 18px}
 .card h3{margin-top:0}
-footer{background:var(--ink);color:#C9CDBE;padding:34px 0;margin-top:30px;font-size:15px}
+footer{background:var(--ink);color:#A1A1AA;padding:34px 0;margin-top:30px;font-size:15px}
 footer b{color:#fff}
-footer a{color:var(--lime)}
+footer a{color:#38BDF8}
 a{color:var(--deep)}
 @media (max-width:640px){header h1{font-size:30px} .os{grid-template-columns:1fr}}
 @media print{header,footer,.num,.tag,.box,.warn,th{-webkit-print-color-adjust:exact;print-color-adjust:exact} figure,.box,.warn,tr,.card,footer{break-inside:avoid} h2,h3{break-after:avoid} figure img{max-height:118mm;width:auto;max-width:100%} footer{margin-top:20px}}
@@ -52,7 +52,7 @@ a{color:var(--deep)}
 </head>
 <body>
 <header><div class="wrap">
-  <div class="brand"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCIgdmlld0JveD0iMCAwIDIyMCAyMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAwKSI+PHJlY3Qgd2lkdGg9IjIyMC4wIiBoZWlnaHQ9IjIyMC4wIiByeD0iNTYuMCIgZmlsbD0iIzExMTIwOCIvPjxyZWN0IHg9IjUwLjAiIHk9IjUwLjAiIHdpZHRoPSIzNC4wIiBoZWlnaHQ9IjEyMC4wIiByeD0iMTAuMCIgZmlsbD0iI0M2RjQzMiIvPjxwYXRoIGQ9Ik0xMDAuMCA2Mi4wUTEwMC4wIDUwLjAgMTExLjAgNTYuMEwxNzAuMCAxMDAuMFExODAuMCAxMTAuMCAxNzAuMCAxMjAuMEwxMTEuMCAxNjQuMFExMDAuMCAxNzAuMCAxMDAuMCAxNTguMFoiIGZpbGw9IiNGRkZGRkYiLz48L2c+PC9zdmc+Cg==" alt=""><b>Clip<span>Forge</span></b></div>
+  <div class="brand"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIwIiBoZWlnaHQ9IjIyMCIgdmlld0JveD0iMCAwIDIyMCAyMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAwKSI+PHJlY3Qgd2lkdGg9IjIyMC4wIiBoZWlnaHQ9IjIyMC4wIiByeD0iNTYuMCIgZmlsbD0iIzBCMTExNiIvPjxyZWN0IHg9IjUwLjAiIHk9IjUwLjAiIHdpZHRoPSIzNC4wIiBoZWlnaHQ9IjEyMC4wIiByeD0iMTAuMCIgZmlsbD0iIzBFQTVFOSIvPjxwYXRoIGQ9Ik0xMDAuMCA2Mi4wUTEwMC4wIDUwLjAgMTExLjAgNTYuMEwxNzAuMCAxMDAuMFExODAuMCAxMTAuMCAxNzAuMCAxMjAuMEwxMTEuMCAxNjQuMFExMDAuMCAxNzAuMCAxMDAuMCAxNTguMFoiIGZpbGw9IiNGRkZGRkYiLz48L2c+PC9zdmc+" alt=""><b>Clip<span>Forge</span></b></div>
   <h1>Setup Guide</h1>
   <p>Turn long videos and live streams into captioned vertical clips (Reels, Shorts, TikTok) locally on your machine.</p>
 </div></header>

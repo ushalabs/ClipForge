@@ -10,9 +10,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--brand:#C6F432;--brand-hi:#D4FA5A;--ink:#1A2100;--soft:#F5FDE0;--line-b:#E3F7A8;--deep:#4E6B00;
-  --frame:#1E1612;--frame-2:#2C221D;--frame-text:#F4EEEA;--frame-dim:#A99A91;
-  --muted:#F7F4F1;--line:#EEE8E4;--line-2:#E1D9D3;--text:#211813;--dim:#6D6159;--faint:#A0948C;--bad:#D3343F;--bad-soft:#FDECEE;
+:root{--brand:#0EA5E9;--brand-hi:#38BDF8;--ink:#04131B;--soft:#E0F2FE;--line-b:#BAE6FD;--deep:#0369A1;
+  --frame:#0F1012;--frame-2:#16171A;--frame-text:#F4F4F5;--frame-dim:#A1A1AA;
+  --muted:#F4F4F5;--line:#E4E4E7;--line-2:#D4D4D8;--text:#090A0C;--dim:#52525B;--faint:#71717A;--bad:#DC2626;--bad-soft:#FEE2E2;
   --r-lg:16px;--r:12px;--r-sm:8px;color-scheme:light}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -24,10 +24,10 @@ svg{width:18px;height:18px;flex:none;fill:currentColor}
 :focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 20px;border-radius:var(--r);border:1px solid var(--line-2);background:#fff;color:var(--text);
   font:inherit;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background-color .15s ease,border-color .15s ease,color .15s ease}
-.btn:hover{background:var(--muted);border-color:#D4CAC3}
+.btn:hover{background:var(--muted);border-color:#A1A1AA}
 .btn.primary{background:var(--brand);border-color:var(--brand);color:var(--ink)}
 .btn.primary:hover{background:var(--brand-hi);border-color:var(--brand-hi)}
-.btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}.btn.dark:hover{background:#3A2C25;border-color:#3A2C25}
+.btn.dark{background:var(--frame);border-color:var(--frame);color:#fff}.btn.dark:hover{background:var(--frame-2);border-color:var(--frame-2)}
 .btn.sm{height:38px;padding:0 14px;font-size:14px}
 .btn.lg{height:52px;padding:0 26px;font-size:16px}
 .btn:disabled{opacity:.5;cursor:default}
@@ -48,7 +48,7 @@ body{min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,
 form{display:flex;flex-direction:column;gap:16px}
 label{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:600;color:var(--dim)}
 input{height:46px;padding:0 14px;border-radius:var(--r-sm);border:1px solid var(--line-2);background:#fff;font:inherit;color:var(--text);outline:none;transition:border-color .15s ease,background-color .15s ease}
-input:hover{border-color:#D4CAC3}input:focus{border-color:var(--brand);background:#fff}
+input:hover{border-color:#A1A1AA}input:focus{border-color:var(--brand);background:#fff}
 input:focus-visible{outline:none}
 input::placeholder{color:var(--faint)}
 .btn{width:100%;height:48px}

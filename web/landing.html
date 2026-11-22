@@ -7,7 +7,7 @@
 <meta name="description" content="Turn YouTube, Twitch, and Kick videos and live streams into captioned vertical clips. Self-hosted, local transcription, your own AI key.">
 <link rel="canonical" href="{{SITE}}/">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<meta name="theme-color" content="#C6F432">
+<meta name="theme-color" content="#0EA5E9">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ClipForge">
 <meta property="og:url" content="{{SITE}}/">
@@ -20,9 +20,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --brand:#C6F432;--brand-hi:#D4FA5A;--ink:#1A2100;--soft:#F5FDE0;--line-b:#E3F7A8;--deep:#4E6B00;
-  --frame:#1E1612;--frame-2:#2C221D;--frame-text:#F4EEEA;--frame-dim:#A99A91;
-  --muted:#F7F4F1;--line:#EEE8E4;--line-2:#E1D9D3;--text:#211813;--dim:#6D6159;--faint:#A0948C;--good:#0F8A57;
+  --brand:#0EA5E9;--brand-hi:#38BDF8;--ink:#04131B;--soft:#E0F2FE;--line-b:#BAE6FD;--deep:#0369A1;
+  --frame:#0F1012;--frame-2:#16171A;--frame-text:#F4F4F5;--frame-dim:#A1A1AA;
+  --muted:#F4F4F5;--line:#E4E4E7;--line-2:#D4D4D8;--text:#090A0C;--dim:#52525B;--faint:#71717A;--good:#15803D;
   --r-lg:14px;--r:10px;--r-sm:8px;
   color-scheme:light;
 }
@@ -45,7 +45,7 @@ svg{width:18px;height:18px;flex:none;fill:currentColor}
   font:inherit;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;white-space:nowrap;
   transition:background-color .15s ease,border-color .15s ease,color .15s ease;
 }
-.btn:hover{background:var(--muted);border-color:#D4CAC3}
+.btn:hover{background:var(--muted);border-color:#A1A1AA}
 .btn.primary{background:var(--brand);border-color:var(--brand);color:var(--ink)}
 .btn.primary:hover{background:var(--brand-hi);border-color:var(--brand-hi)}
 .btn.dark{background:var(--frame);border-color:var(--frame);color:#fff}
@@ -139,15 +139,15 @@ details p{color:var(--dim);margin-top:10px;font-size:14px}
 .closing .linkform{flex:1 1 420px}
 
 /* Footer */
-footer.site{background:var(--frame);color:#B9A597;padding:48px 0 24px;font-size:14px}
+footer.site{background:var(--frame);color:#A1A1AA;padding:48px 0 24px;font-size:14px}
 footer.site .fgrid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:32px}
 footer.site .fbrand img{height:28px;display:block;margin-bottom:12px}
-footer.site .fbrand p{max-width:280px;line-height:1.55;margin:0 0 16px;color:#B9A597;font-size:13px}
+footer.site .fbrand p{max-width:280px;line-height:1.55;margin:0 0 16px;color:#A1A1AA;font-size:13px}
 footer.site h4{font-size:13px;font-weight:600;color:#fff;margin:0 0 12px}
 footer.site ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;font-size:13px}
-footer.site ul a{color:#B9A597;text-decoration:none;transition:color .15s ease}
+footer.site ul a{color:#A1A1AA;text-decoration:none;transition:color .15s ease}
 footer.site ul a:hover{color:var(--brand)}
-footer.site .fbottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:36px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#8C7B70}
+footer.site .fbottom{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:36px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#71717A}
 
 @media (max-width:900px){
   .hero-grid,.workflow,.cap-grid,.trio,.faqgrid{grid-template-columns:1fr}
