@@ -18,19 +18,19 @@ LOADING_HTML = """<!doctype html>
 <title>ClipForge</title>
 <style>
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;background:#1E1612;color:#F4EEEA;font:15px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+html,body{height:100%;margin:0;background:#0F1012;color:#F4F4F5;font:15px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
 body{display:flex;align-items:center;justify-content:center}
 .wrap{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;padding:24px;max-width:420px}
 .mark{width:64px;height:64px;display:block}
-.title{font-size:20px;font-weight:700;letter-spacing:-.02em;color:#F4EEEA}
-.pill{display:inline-block;padding:4px 12px;border-radius:6px;background:#2C221D;border:1px solid rgba(255,255,255,.08);color:#C6F432;font-size:13px;font-weight:600}
+.title{font-size:20px;font-weight:700;letter-spacing:-.02em;color:#F4F4F5}
+.pill{display:inline-block;padding:4px 12px;border-radius:6px;background:#16171A;border:1px solid #26272B;color:#38BDF8;font-size:13px;font-weight:600}
 </style>
 </head>
 <body>
 <div class="wrap">
   <svg class="mark" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <rect width="220" height="220" rx="56" fill="#111208"/>
-    <rect x="50" y="50" width="34" height="120" rx="10" fill="#C6F432"/>
+    <rect width="220" height="220" rx="56" fill="#0B1116"/>
+    <rect x="50" y="50" width="34" height="120" rx="10" fill="#0EA5E9"/>
     <path d="M100 62Q100 50 111 56L170 100Q180 110 170 120L111 164Q100 170 100 158Z" fill="#FFFFFF"/>
   </svg>
   <div class="title">ClipForge</div>
@@ -124,8 +124,8 @@ def build_tray_icon():
     size = 64
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    d.rounded_rectangle([0, 0, size - 1, size - 1], radius=16, fill=(17, 18, 8, 255))
-    d.rounded_rectangle([14, 14, 24, 50], radius=3, fill=(198, 244, 50, 255))
+    d.rounded_rectangle([0, 0, size - 1, size - 1], radius=16, fill=(11, 17, 22, 255))
+    d.rounded_rectangle([14, 14, 24, 50], radius=3, fill=(14, 165, 233, 255))
     d.polygon([(30, 16), (52, 32), (30, 48)], fill=(255, 255, 255, 255))
     return img
 
@@ -214,7 +214,7 @@ def main(argv=None):
         width=1280,
         height=840,
         min_size=(960, 640),
-        background_color="#1E1612",
+        background_color="#0F1012",
         js_api=DesktopApi(),
     )
 
