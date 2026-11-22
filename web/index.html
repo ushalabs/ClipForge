@@ -2499,6 +2499,29 @@ $("#main").addEventListener("scroll", () => $(".topbar").classList.toggle("stuck
   checkNew(true);
   setInterval(async () => { try { S.status = await api("/api/status"); drawShell(); if (S.view === "overview") drawOverview(); checkNew(); } catch {} }, 15000);
 })();
+function initDesktopBridge() {
+  if (window._cfDesktopReady || !(window.pywebview && window.pywebview.api && window.pywebview.api.open_external)) return;
+  window._cfDesktopReady = true;
+  document.addEventListener("click", e => {
+    const a = e.target.closest("a[href]");
+    if (!a) return;
+    const raw = a.getAttribute("href") || "";
+    if (a.target === "_blank" || raw.startsWith("/oauth/")) {
+      e.preventDefault();
+      window.pywebview.api.open_external(a.href);
+    }
+  });
+  const _open = window.open;
+  window.open = (url, target, features) => {
+    if (url && (!target || target === "_blank")) {
+      window.pywebview.api.open_external(new URL(url, location.href).href);
+      return null;
+    }
+    return _open ? _open.call(window, url, target, features) : null;
+  };
+}
+initDesktopBridge();
+window.addEventListener("pywebviewready", initDesktopBridge, {once: true});
 </script>
 </body>
 </html>
