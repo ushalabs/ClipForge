@@ -2055,13 +2055,20 @@ function drawOverview() {
   const state = r => r.state === "recording" ? `<span class="pill live"><span class="dot"></span>Recording</span>` : r.state === "waiting" ? `<span class="pill warn">Waiting for live</span>` : `<span class="pill">Idle</span>`;
   const pst = p => p.status === "posted" ? `<span class="pill ok">Posted</span>` : p.status === "failed" ? `<span class="pill bad">Failed</span>` : p.status === "posting" ? `<span class="pill warn">Posting now</span>` : `<span class="pill warn">${clock(p.due_at)}</span>`;
   const yq = S.status.yt_quota;
-  const tstrip = `<div class="tstrip">
-    <span class="tstat ${o.recording ? "rec" : ""}">Recording <b>${o.recording}</b></span>
-    <span class="tstat">Clips today <b>${sum("clips_today")}</b></span>
-    <span class="tstat">Posted today <b>${sum("posted_today")}</b></span>
-    <span class="tstat ${sum("failed") ? "bad" : ""}">Queue <b>${sum("queued")}</b>${sum("failed") ? ` · ${sum("failed")} failed` : ""}</span>
-    <span class="tstat">Views <b>${sum("views").toLocaleString()}</b></span>
-    <span class="tstat">YT Quota <b>${yq ? `${fmtK(yq.used)} / ${fmtK(yq.limit)}` : "0 / 10K"}</b></span>
+  const kpi = (val, lbl, cls = "") => `<div class="ukpi ${cls}" style="display:flex;flex-direction:column;gap:3px;min-width:0;padding:0 16px;border-right:1px solid var(--line)">
+      <span style="font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">${lbl}</span>
+      <b style="font-size:20px;font-weight:700;letter-spacing:-.02em;color:${cls === "rec" ? "var(--live)" : cls === "bad" ? "var(--bad)" : "var(--text)"};font-variant-numeric:tabular-nums;line-height:1.2;white-space:nowrap">${val}</b>
+    </div>`;
+  const tstrip = `<div class="tstrip" style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));padding:10px 18px;background:var(--bg);border-bottom:1px solid var(--line);height:auto;min-height:0">
+    ${kpi(o.recording, "Recording", o.recording ? "rec" : "")}
+    ${kpi(sum("clips_today"), "Clips today")}
+    ${kpi(sum("posted_today"), "Posted today")}
+    ${kpi(sum("failed") ? `${sum("queued")} <small style="font-size:12px;font-weight:500">(${sum("failed")} failed)</small>` : sum("queued"), "Queue", sum("failed") ? "bad" : "")}
+    ${kpi(sum("views").toLocaleString(), "Views")}
+    <div style="display:flex;flex-direction:column;gap:3px;min-width:0;padding-left:16px">
+      <span style="font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">YT Quota</span>
+      <b style="font-size:20px;font-weight:700;letter-spacing:-.02em;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.2;white-space:nowrap">${yq ? `${fmtK(yq.used)} / ${fmtK(yq.limit)}` : "0 / 10K"}</b>
+    </div>
   </div>`;
   const activeJobs = S.jobs.filter(j => j.status === "queued" || j.status === "running");
   const recentClips = [];
@@ -2149,19 +2156,19 @@ function hbars(rows) {
 }
 function drawUsage() {
   const k = S.usage, box = $("#usage"); if (!k || !box) return;
-  const kpi = (val, lbl, sub = "") => `<div style="display:flex;flex-direction:column;gap:4px;min-width:0;padding-right:20px;border-right:1px solid var(--line)">
-      <span style="font-size:12px;font-weight:500;color:var(--dim);text-transform:uppercase;letter-spacing:.04em">${lbl}</span>
-      <b style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${val}</b>
+  const kpi = (val, lbl, sub = "") => `<div style="display:flex;flex-direction:column;gap:4px;min-width:0;padding-right:18px;border-right:1px solid var(--line)">
+      <span style="font-size:11.5px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">${lbl}</span>
+      <b style="font-size:21px;font-weight:700;letter-spacing:-.02em;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.2;white-space:nowrap">${val}</b>
       ${sub ? `<span style="font-size:12px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sub}</span>` : ""}
     </div>`;
-  box.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px;padding:6px 0 24px;margin-bottom:24px;border-bottom:1px solid var(--line)">
+  box.innerHTML = `<div style="display:grid;grid-template-columns:minmax(180px,1.4fr) repeat(4,minmax(100px,1fr));gap:18px;padding:6px 0 22px;margin-bottom:24px;border-bottom:1px solid var(--line)">
       ${kpi(k.ready ? esc(k.provider || "Ready") : "Loudness mode", "Service", k.ready && k.model ? esc(k.model) : "")}
       ${kpi((k.today_calls || 0).toLocaleString(), "Calls today")}
       ${kpi(fmtK(k.today_tokens), "Tokens today")}
       ${kpi((k.calls_total || 0).toLocaleString(), "Total calls")}
       <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
-        <span style="font-size:12px;font-weight:500;color:var(--dim);text-transform:uppercase;letter-spacing:.04em">Total tokens</span>
-        <b style="font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.15">${fmtK(k.tokens_total)}</b>
+        <span style="font-size:11.5px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">Total tokens</span>
+        <b style="font-size:21px;font-weight:700;letter-spacing:-.02em;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.2">${fmtK(k.tokens_total)}</b>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:28px">
