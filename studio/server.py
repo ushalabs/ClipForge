@@ -35,7 +35,7 @@ def _quiet(fn):
 
 
 app = FastAPI(title="ClipForge", docs_url=None, redoc_url=None, openapi_url=None)
-WEB = config.ROOT / "web"
+WEB = config.BUNDLE_DIR / "web"
 OPEN = ("/api/auth/", "/pub/", "/api/public", "/auth/google/", "/auth/verify", "/brand/", "/assets/", "/healthz", "/favicon.ico", "/robots.txt", "/sitemap.xml")
 PAGES = {"/": "landing.html", "/login": "auth.html", "/signup": "auth.html", "/reset": "reset.html",
          "/privacy": "legal.html", "/terms": "legal.html", "/acceptable-use": "legal.html"}

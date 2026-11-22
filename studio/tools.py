@@ -20,8 +20,15 @@ _seen = {"at": 0.0, "missing": list(NEEDED)}
 
 def _places() -> list:
     """Folders ffmpeg is usually installed into, for when it is not on the PATH of this running program."""
-    root = Path(__file__).resolve().parent.parent
-    out = [root / "ffmpeg" / "bin", root / "bin", root]
+    roots = [Path(__file__).resolve().parent.parent]
+    if getattr(sys, "frozen", False):
+        roots.insert(0, Path(sys.executable).resolve().parent)
+        meipass = getattr(sys, "_MEIPASS", None)
+        if meipass:
+            roots.append(Path(meipass))
+    out = []
+    for r in roots:
+        out += [r / "ffmpeg" / "bin", r / "bin", r]
     env = os.environ.get
     if env("CLIPFORGE_FFMPEG_DIR"):                    # the folder that holds ffmpeg, if it lives somewhere unusual
         out.insert(0, Path(env("CLIPFORGE_FFMPEG_DIR")))

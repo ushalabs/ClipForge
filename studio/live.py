@@ -105,6 +105,19 @@ def mine(jid):
     return s if s and s.job["user"] == ctx.uid() else None
 
 
+def stop_all(note: str = "ClipForge closed") -> int:
+    """Stop every active live recording cleanly (used when shutting down the desktop app)."""
+    stopped = 0
+    for s in list(active()):
+        try:
+            with ctx.as_user(s.job["user"]):
+                s.stop(note)
+                stopped += 1
+        except Exception:  # noqa: BLE001
+            pass
+    return stopped
+
+
 class Session:
     def __init__(self, job, settings):
         self.job, self.settings = job, settings

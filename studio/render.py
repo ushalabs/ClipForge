@@ -25,6 +25,11 @@ FONT_FILES = {"Poppins ExtraBold": "Poppins-ExtraBold.ttf", "Anton": "Anton-Regu
 CAP_MAX_W = 960   # captions never run wider than this, whatever is said
 
 
+def _fonts_src() -> Path:
+    bundled = config.BUNDLE_DIR / "studio" / "fonts"
+    return bundled if bundled.is_dir() else Path(__file__).resolve().parent / "fonts"
+
+
 class _Font:
     """Measures text exactly as the renderer will draw it, so every word can be placed by hand: the highlighted
     word can grow without pushing its neighbours, and the heading box fits its text."""
@@ -32,7 +37,7 @@ class _Font:
 
     def __init__(self, name):
         import struct
-        path = Path(__file__).resolve().parent / "fonts" / FONT_FILES.get(name, FONT_FILES["Poppins ExtraBold"])
+        path = _fonts_src() / FONT_FILES.get(name, FONT_FILES["Poppins ExtraBold"])
         d = path.read_bytes()
         tables = {}
         for i in range(struct.unpack(">H", d[4:6])[0]):
@@ -72,7 +77,7 @@ class _Font:
 CAPTION_LEAD = 0.0  # measured: word stamps are within 0.15 s of the voice, so no shift is needed
 def install_fonts():
     """Copy the bundled caption fonts next to the data, so captions look the same on every machine and server."""
-    src = Path(__file__).resolve().parent / "fonts"
+    src = _fonts_src()
     for f in src.glob("*.ttf"):
         if not (config.FONTS_DIR / f.name).exists():
             shutil.copyfile(f, config.FONTS_DIR / f.name)

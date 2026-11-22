@@ -3,9 +3,31 @@ on a laptop and on a server. Nothing here is specific to one machine."""
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+FROZEN = bool(getattr(sys, "frozen", False))
+BUNDLE_DIR = Path(sys._MEIPASS) if FROZEN and hasattr(sys, "_MEIPASS") else Path(__file__).resolve().parent.parent
+
+
+def _app_root() -> Path:
+    """Where ClipForge keeps editable settings (.env, storage.json, default data/)."""
+    if not FROZEN:
+        return Path(__file__).resolve().parent.parent
+    exe_dir = Path(sys.executable).resolve().parent
+    try:
+        probe = exe_dir / ".clipforge-probe"
+        probe.write_text("ok", encoding="utf-8")
+        probe.unlink()
+        return exe_dir
+    except OSError:
+        base = Path(os.environ.get("LOCALAPPDATA") or Path.home()) if sys.platform == "win32" else Path.home()
+        root = base / "ClipForge"
+        root.mkdir(parents=True, exist_ok=True)
+        return root
+
+
+ROOT = _app_root()
 
 
 def _load_dotenv():

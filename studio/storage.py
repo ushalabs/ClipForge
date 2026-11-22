@@ -93,10 +93,25 @@ def open_folder():
 
 _PICK = ("import tkinter as tk\nfrom tkinter import filedialog\nr = tk.Tk()\nr.withdraw()\nr.attributes('-topmost', True)\n"
          "print(filedialog.askdirectory(title='Choose where ClipForge keeps its videos and clips') or '')\n")
+_folder_picker = None
+
+
+def set_folder_picker(fn):
+    """Register an in-process folder picker (used by the desktop window shell)."""
+    global _folder_picker
+    _folder_picker = fn
 
 
 def pick_folder() -> str:
     """The computer's own "choose a folder" window. Returns the folder, or "" if it was closed or cannot be shown."""
+    if _folder_picker is not None:
+        try:
+            res = str(_folder_picker() or "").strip()
+            return str(Path(res)) if res else ""
+        except Exception:  # noqa: BLE001
+            return ""
+    if getattr(sys, "frozen", False):
+        return ""
     try:
         r = subprocess.run([sys.executable, "-c", _PICK], capture_output=True, text=True, timeout=600,
                            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
