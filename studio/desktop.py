@@ -161,6 +161,14 @@ def _ensure_stdio():
 
 def main(argv=None):
     _ensure_stdio()
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            from . import __version__
+
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(f"UshaLabs.ClipForge.{__version__}")
+        except Exception:  # noqa: BLE001
+            pass
     args = _parse_args(argv)
     try:
         import webview

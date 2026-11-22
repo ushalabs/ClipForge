@@ -165,6 +165,7 @@ try {
 
     Write-Host "==> Staging ClipForge bundle into $stageDir..."
     Copy-Item -Path (Join-Path $bundleDir "*") -Destination $stageDir -Recurse -Force
+    Copy-Item -LiteralPath $iconPath -Destination (Join-Path $stageDir "clipforge-v$Version.ico") -Force
 
     # 3. Optionally bundle ffmpeg & ffprobe (dereferencing WinGet symlinks)
     if ($BundleFfmpeg) {

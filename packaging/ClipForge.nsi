@@ -110,12 +110,12 @@ Section "!ClipForge (Required)" SecMain
     StrCpy $RegistryKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\ClipForge.PackagingTest"
     CreateDirectory "$INSTDIR\StartMenu"
     StrCpy $Shortcut "$INSTDIR\StartMenu\ClipForge.lnk"
-    CreateShortcut "$Shortcut" "$INSTDIR\ClipForge.exe" "" "$INSTDIR\ClipForge.exe" 0
+    CreateShortcut "$Shortcut" "$INSTDIR\ClipForge.exe" "" "$INSTDIR\clipforge-v${VERSION}.ico" 0
   ${Else}
     StrCpy $RegistryKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\ClipForge"
     CreateDirectory "$SMPROGRAMS\UshaLabs"
     StrCpy $Shortcut "$SMPROGRAMS\UshaLabs\ClipForge.lnk"
-    CreateShortcut "$Shortcut" "$INSTDIR\ClipForge.exe" "" "$INSTDIR\ClipForge.exe" 0
+    CreateShortcut "$Shortcut" "$INSTDIR\ClipForge.exe" "" "$INSTDIR\clipforge-v${VERSION}.ico" 0
     CreateShortcut "$SMPROGRAMS\UshaLabs\Uninstall ClipForge.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
   ${EndIf}
 
@@ -125,18 +125,22 @@ Section "!ClipForge (Required)" SecMain
   WriteRegStr HKCU "$RegistryKey" "URLInfoAbout" "https://github.com/ushalabs/ClipForge"
   WriteRegStr HKCU "$RegistryKey" "HelpLink" "https://github.com/ushalabs/ClipForge"
   WriteRegStr HKCU "$RegistryKey" "InstallLocation" "$INSTDIR"
-  WriteRegStr HKCU "$RegistryKey" "DisplayIcon" "$INSTDIR\ClipForge.exe,0"
+  WriteRegStr HKCU "$RegistryKey" "DisplayIcon" "$INSTDIR\clipforge-v${VERSION}.ico,0"
   WriteRegStr HKCU "$RegistryKey" "UninstallString" '$\"$INSTDIR\Uninstall.exe$\"'
   WriteRegStr HKCU "$RegistryKey" "QuietUninstallString" '$\"$INSTDIR\Uninstall.exe$\" /S'
   WriteRegDWORD HKCU "$RegistryKey" "EstimatedSize" $InstallSizeKB
   WriteRegDWORD HKCU "$RegistryKey" "NoModify" 1
   WriteRegDWORD HKCU "$RegistryKey" "NoRepair" 1
+  ${If} $Isolated != "1"
+    System::Call 'shell32::SHChangeNotify(i 0x08000000, i 0, i 0, i 0)'
+  ${EndIf}
 SectionEnd
 
 Section "Desktop Shortcut" SecDesktop
   ${If} $Isolated != "1"
     SetOutPath "$INSTDIR"
-    CreateShortcut "$DESKTOP\ClipForge.lnk" "$INSTDIR\ClipForge.exe" "" "$INSTDIR\ClipForge.exe" 0
+    CreateShortcut "$DESKTOP\ClipForge.lnk" "$INSTDIR\ClipForge.exe" "" "$INSTDIR\clipforge-v${VERSION}.ico" 0
+    System::Call 'shell32::SHChangeNotify(i 0x08000000, i 0, i 0, i 0)'
   ${EndIf}
 SectionEnd
 
