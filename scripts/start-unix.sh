@@ -55,26 +55,46 @@ if [ ! -x .venv/bin/python ]; then
   say "Setting up (one time)..."
   "$PY" -m venv .venv || fail "Could not create the Python environment (on Linux: sudo apt install python3-venv)."
 fi
-HASH="$("$PY" -c 'import hashlib,sys; print(hashlib.sha256(open("requirements.txt","rb").read()).hexdigest())')"
+HAS_GUI=0
+if [ "${CLIPFORGE_BROWSER_ONLY:-0}" != "1" ] && [ -f requirements-desktop.txt ]; then
+  if [ "$(uname)" = "Darwin" ] || [ -n "${DISPLAY:-}" ] || [ -n "${WAYLAND_DISPLAY:-}" ]; then
+    HAS_GUI=1
+  fi
+fi
+
+HASH="$("$PY" -c "import hashlib,os; h=hashlib.sha256(open('requirements.txt','rb').read()); os.path.exists('requirements-desktop.txt') and '$HAS_GUI'=='1' and h.update(open('requirements-desktop.txt','rb').read()); print(h.hexdigest())")"
 if [ ! -f .venv/requirements.sha ] || [ "$(cat .venv/requirements.sha)" != "$HASH" ]; then
   say "Installing packages (one time, a few minutes)..."
   .venv/bin/python -m pip install --upgrade pip --disable-pip-version-check -q
-  .venv/bin/python -m pip install -r requirements.txt --disable-pip-version-check || fail "Installing packages failed. Check your internet connection and run this again."
+  if [ "$HAS_GUI" = "1" ]; then
+    .venv/bin/python -m pip install -r requirements-desktop.txt --disable-pip-version-check || \
+      .venv/bin/python -m pip install -r requirements.txt --disable-pip-version-check || \
+      fail "Installing packages failed. Check your internet connection and run this again."
+  else
+    .venv/bin/python -m pip install -r requirements.txt --disable-pip-version-check || \
+      fail "Installing packages failed. Check your internet connection and run this again."
+  fi
   echo "$HASH" > .venv/requirements.sha
 fi
 
 echo
 say "Starting ClipForge. The first start downloads the speech model (about 480 MB, once)."
-say "Your browser opens by itself. Keep this window open while you use ClipForge; close it to stop."
-echo
-export CLIPFORGE_OPEN_BROWSER=1
 export PYTHONWARNINGS="ignore::DeprecationWarning"
 
 # Already running? Then just open it. Port taken by another program? Then use the next free one.
 open_url() { if command -v open >/dev/null 2>&1; then open "$1"; elif command -v xdg-open >/dev/null 2>&1; then xdg-open "$1"; fi; }
 PORT="${CLIPFORGE_PORT:-8765}"
+USE_DESKTOP=0
+if [ "$HAS_GUI" = "1" ] && .venv/bin/python -c "import webview" 2>/dev/null; then
+  USE_DESKTOP=1
+fi
 for p in $(seq "$PORT" $((PORT + 9))); do
   if .venv/bin/python -c "import sys,urllib.request; sys.exit(0 if b'ClipForge' in urllib.request.urlopen('http://127.0.0.1:$p/app', timeout=3).read() else 1)" 2>/dev/null; then
+    if [ "$USE_DESKTOP" = "1" ]; then
+      say "ClipForge is already running. Opening desktop window..."
+      export CLIPFORGE_PORT="$p"
+      exec .venv/bin/python -m studio.desktop --port "$p"
+    fi
     say "ClipForge is already running (in another window). Opening it in your browser."
     open_url "http://127.0.0.1:$p/app"; exit 0
   fi
@@ -85,4 +105,11 @@ while ! .venv/bin/python -c "import socket,sys; s=socket.socket(); s.bind(('127.
   [ "$PORT" -le 8800 ] || fail "No free port found between 8765 and 8800."
 done
 export CLIPFORGE_PORT="$PORT"
+if [ "$USE_DESKTOP" = "1" ]; then
+  say "Opening ClipForge desktop window..."
+  exec .venv/bin/python -m studio.desktop --port "$PORT"
+fi
+say "Your browser opens by itself. Keep this window open while you use ClipForge; close it to stop."
+echo
+export CLIPFORGE_OPEN_BROWSER=1
 exec .venv/bin/python -m studio.server

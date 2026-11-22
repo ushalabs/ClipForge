@@ -74,22 +74,33 @@ if (-not (Test-Path $VPy)) {
     & $PyExe @PyArgs -m venv $Venv
     if ($LASTEXITCODE -ne 0) { Fail "Could not create the Python environment." }
 }
+$UseDesktop = ($env:CLIPFORGE_BROWSER_ONLY -ne "1") -and (Test-Path (Join-Path $Root "requirements-desktop.txt"))
 $Stamp = Join-Path $Venv "requirements.sha"
-$Hash = (Get-FileHash (Join-Path $Root "requirements.txt") -Algorithm SHA256).Hash
+$HashInput = (Get-FileHash (Join-Path $Root "requirements.txt") -Algorithm SHA256).Hash
+if ($UseDesktop) {
+    $HashInput += ":" + (Get-FileHash (Join-Path $Root "requirements-desktop.txt") -Algorithm SHA256).Hash
+}
+$Hash = [BitConverter]::ToString([System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes($HashInput))).Replace("-", "")
 if (-not (Test-Path $Stamp) -or (Get-Content $Stamp -Raw).Trim() -ne $Hash) {
     Say "Installing packages (one time, a few minutes)..." "Cyan"
     & $VPy -m pip install --upgrade pip --disable-pip-version-check -q
-    & $VPy -m pip install -r requirements.txt --disable-pip-version-check
-    if ($LASTEXITCODE -ne 0) { Fail "Installing packages failed. Check your internet connection and run this again." }
+    if ($UseDesktop) {
+        & $VPy -m pip install -r requirements-desktop.txt --disable-pip-version-check
+        if ($LASTEXITCODE -ne 0) {
+            Say "Desktop UI package failed to install; falling back to browser mode..." "Yellow"
+            & $VPy -m pip install -r requirements.txt --disable-pip-version-check
+            if ($LASTEXITCODE -ne 0) { Fail "Installing packages failed. Check your internet connection and run this again." }
+        }
+    } else {
+        & $VPy -m pip install -r requirements.txt --disable-pip-version-check
+        if ($LASTEXITCODE -ne 0) { Fail "Installing packages failed. Check your internet connection and run this again." }
+    }
     Set-Content -Path $Stamp -Value $Hash
 }
 
 # ---- Start
 Write-Host ""
 Say "Starting ClipForge. The first start downloads the speech model (about 480 MB, once)." "Green"
-Say "Your browser opens by itself. Keep this window open while you use ClipForge; close it to stop." "Green"
-Write-Host ""
-$env:CLIPFORGE_OPEN_BROWSER = "1"
 $env:PYTHONWARNINGS = "ignore::DeprecationWarning"
 
 # ---- Already running? Then just open it. Port taken by another program? Then use the next free one.
@@ -103,12 +114,26 @@ function Is-ClipForge($p) {
         return ($r.Content -match "ClipForge")
     } catch { return $false }
 }
+$hasDesktop = $false
+if ($env:CLIPFORGE_BROWSER_ONLY -ne "1") {
+    & $VPy -c "import webview" 2>$null
+    $hasDesktop = ($LASTEXITCODE -eq 0)
+}
+$VPyW = Join-Path $Venv "Scripts\pythonw.exe"
+$DesktopExe = if (Test-Path $VPyW) { $VPyW } else { $VPy }
+
 $Port = 8765
 if ($env:CLIPFORGE_PORT) { $Port = [int]$env:CLIPFORGE_PORT }
 for ($p = $Port; $p -lt $Port + 10; $p++) {
     if (Is-ClipForge $p) {
-        Say "ClipForge is already running (in another window). Opening it in your browser." "Green"
-        Start-Process "http://127.0.0.1:$p/app"
+        if ($hasDesktop) {
+            Say "ClipForge is already running. Opening desktop window..." "Green"
+            $env:CLIPFORGE_PORT = "$p"
+            Start-Process -FilePath $DesktopExe -ArgumentList "-m", "studio.desktop", "--port", "$p" -WorkingDirectory $Root
+        } else {
+            Say "ClipForge is already running (in another window). Opening it in your browser." "Green"
+            Start-Process "http://127.0.0.1:$p/app"
+        }
         exit 0
     }
 }
@@ -118,4 +143,12 @@ while (-not (Port-Free $Port)) {
     if ($Port -gt 8800) { Fail "No free port found between 8765 and 8800. Restart the computer and try again." }
 }
 $env:CLIPFORGE_PORT = "$Port"
+if ($hasDesktop) {
+    Say "Opening ClipForge desktop window..." "Green"
+    Start-Process -FilePath $DesktopExe -ArgumentList "-m", "studio.desktop", "--port", "$Port" -WorkingDirectory $Root
+    exit 0
+}
+Say "Your browser opens by itself. Keep this window open while you use ClipForge; close it to stop." "Green"
+Write-Host ""
+$env:CLIPFORGE_OPEN_BROWSER = "1"
 & $VPy -m studio.server

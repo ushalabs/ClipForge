@@ -56,6 +56,27 @@ It supports:
 
 ---
 
+## Desktop App
+
+Run ClipForge as a native desktop window (with optional system tray support):
+
+```bash
+pip install -r requirements-desktop.txt
+python -m studio.desktop
+```
+
+Or double-click `Start-ClipForge-Windows.bat` (Windows) / `Start-ClipForge-Mac.command` (macOS).
+
+To build a standalone desktop bundle:
+
+```bash
+python scripts/build-desktop.py
+```
+
+For browser/server mode instead of the desktop window, run `python -m studio.server` (or set `CLIPFORGE_BROWSER_ONLY=1` with the launchers).
+
+---
+
 ## AI Providers
 
 Configure your AI provider in the dashboard (**Settings → AI**) or via `.env`:
