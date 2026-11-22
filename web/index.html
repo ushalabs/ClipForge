@@ -34,17 +34,17 @@ svg{width:16px;height:16px;flex:none;fill:currentColor}
 /* ---------- frame */
 .app{display:grid;grid-template-columns:212px minmax(0,1fr);height:100vh}
 .side{background:var(--surface);color:var(--text);border-right:1px solid var(--line);display:flex;flex-direction:column;height:100vh;padding:10px 8px;min-width:0}
-.side-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 4px 12px 6px}
-.side-head .logo{height:26px;width:auto;display:block}
-.side-head .mark{display:none;width:26px;height:26px}
+.side-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 4px 14px 6px}
+.side-head .logo{height:36px;width:auto;display:block}
+.side-head .mark{display:none;width:30px;height:30px}
 .icon-btn{width:30px;height:30px;display:grid;place-items:center;border-radius:var(--r-sm);border:0;background:transparent;color:var(--dim);cursor:pointer;flex:none}
 .side .icon-btn{color:var(--dim)}
 .icon-btn:active,.side .icon-btn:active{background:var(--surface-2)}
-.nav{display:flex;flex-direction:column;gap:2px;overflow-y:auto;flex:1;min-height:0;scrollbar-width:none}
+.nav{display:flex;flex-direction:column;gap:3px;overflow-y:auto;flex:1;min-height:0;scrollbar-width:none}
 .nav::-webkit-scrollbar{display:none}
-.nav h4{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:12px 10px 4px}
-.nav-item{position:relative;display:flex;align-items:center;gap:9px;width:100%;min-height:30px;padding:0 10px;border-radius:var(--r-sm);border:0;background:transparent;color:var(--dim);font-size:13px;font-weight:500;cursor:pointer;text-align:left}
-.nav-item svg{width:15px;height:15px;color:var(--dim)}
+.nav h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:14px 10px 4px}
+.nav-item{position:relative;display:flex;align-items:center;gap:10px;width:100%;min-height:34px;padding:0 10px;border-radius:var(--r-sm);border:0;background:transparent;color:var(--dim);font-size:14px;font-weight:500;cursor:pointer;text-align:left}
+.nav-item svg{width:16px;height:16px;color:var(--dim)}
 .nav-item:active{background:var(--surface-2)}
 .nav-item.on{background:var(--surface-2);color:var(--text);font-weight:600}
 .nav-item.on::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;border-radius:1px;background:var(--brand)}
@@ -179,7 +179,7 @@ main{display:flex;flex-direction:column;background:var(--bg);margin:0;border-rad
 .chan .main input{accent-color:var(--brand);width:15px;height:15px;flex:none}
 .chan .sbadge{margin:0}
 @media (max-width:640px){.chan{flex-wrap:wrap}.chan .main{order:5}}
-.topbar h1{font-size:14px;font-weight:600;letter-spacing:-.01em;color:var(--text)}
+.topbar h1{font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--text)}
 .topbar p{font-size:12px;color:var(--dim);margin-top:0;overflow-wrap:anywhere}
 .topbar p:empty{display:none}
 .icon-btn.menu{display:none}
@@ -1602,6 +1602,8 @@ function onLink(input) {
   linkTimer = setTimeout(() => { if (input.value.trim() === u) takeLink(A, u, input); }, 900);   // other link shapes: take it once typing stops
 }
 document.addEventListener("input", e => { if (e.target.id === "url") onLink(e.target);
+  if (e.target.id === "ai_key") detectAiProvider(e.target.value);
+  if (e.target.id === "ai_model_custom") syncAiModelFields();
   if (e.target.closest?.("#cform") && e.target.dataset.k && !/checkbox|radio/.test(e.target.type)) dirty(true); });
 document.addEventListener("keydown", e => { if (e.target.id === "url" && e.key === "Enter" && e.target.value.trim() && looksLink(e.target.value.trim())) { e.preventDefault(); clearTimeout(linkTimer); takeLink(att(), e.target.value.trim(), e.target); } });
 document.addEventListener("click", e => {
@@ -2104,7 +2106,7 @@ function drawOverview() {
       ${o.creators.map(r => `<tr><td><a class="lnk" href="#" data-act="go" data-v="c:${esc(r.id)}">${esc(r.name)}</a></td><td>${state(r)}</td><td>${r.autopost ? `<span class="pill ok">On</span>` : `<span class="pill">Off</span>`}</td><td class="num">${r.clips_today} <span class="sub">/ ${r.clips_total}</span></td><td class="num">${r.posted_today} <span class="sub">/ ${r.posted_total}</span></td><td class="num">${r.queued}</td><td class="num">${r.failed}</td><td class="num">${r.views.toLocaleString()}</td><td class="num">${r.earnings.toFixed(2)}</td></tr>`).join("")}</table></div>`
       : `<div class="stage-empty"><img src="/brand/favicon.svg" alt=""><b>No creators yet</b><p>Add a creator to keep their channels, live recording, captions, and posting accounts organized.</p><div class="row"><button class="btn sm primary" data-act="newcreator">${ic("plusc")}New creator</button></div></div>`}`;
   } else if (tab === "queue") {
-    mainHtml = `<div class="sec-bar"><div><h2>Post queue (${o.posts.length})</h2><p class="sub">${o.paused ? "Posting paused." : "Scheduled clips go out at their queued time."}</p></div>
+    mainHtml = `<div class="sec-bar"><h2>Post queue (${o.posts.length})</h2>
         <button class="btn sm ${o.paused ? "primary" : ""}" data-act="pause">${ic(o.paused ? "play" : "pause")}${o.paused ? "Resume posting" : "Pause posting"}</button></div>
       ${o.posts.length ? `<div class="scroll"><table class="stack"><tr><th>When</th><th>Clip</th><th>Creator</th><th>Account</th><th class="num">Views</th><th></th></tr>
       ${o.posts.map(p => `<tr><td data-l="Status">${pst(p)}</td><td data-l="Clip" class="c-main">${p.url ? `<a class="lnk" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}${p.error ? `<div class="err" style="margin:2px 0 0">${esc(p.error)}</div>` : ""}</td><td data-l="Creator">${esc(p.creator_name || "None")}</td><td data-l="Account">${esc(p.account_name)}</td><td data-l="Views" class="num">${p.views ?? "–"}${p.likes != null || p.comments != null ? `<div class="sub">${(p.likes ?? 0).toLocaleString()} likes · ${(p.comments ?? 0).toLocaleString()} comments</div>` : ""}</td>
@@ -2147,62 +2149,120 @@ function hbars(rows) {
 }
 function drawUsage() {
   const k = S.usage, box = $("#usage"); if (!k || !box) return;
-  box.innerHTML = `${k.ready ? "" : `<div class="note">${ic("warn")}<span>${S.status.user?.is_admin ? "No AI key is set, so clips are picked by loudness only. Add your key under Settings, AI." : "The AI isn't set up on this server yet, so clips are picked by loudness."}</span></div>`}
-    <div class="tiles five" style="margin-top:${k.ready ? 0 : 16}px">
-      <div class="tile"><i>${ic("bolt")}</i><b>${k.ready ? esc(k.provider || "Ready") : "Not set up"}</b><span>${k.ready && k.model ? esc(k.model) : "AI service"}</span></div>
-      <div class="tile"><i>${ic("clock")}</i><b>${(k.today_calls || 0).toLocaleString()}</b><span>AI calls today</span></div>
-      <div class="tile"><i>${ic("chart")}</i><b>${fmtK(k.today_tokens)}</b><span>Tokens today</span></div>
-      <div class="tile"><i>${ic("scissors")}</i><b>${(k.calls_total || 0).toLocaleString()}</b><span>AI calls in total</span></div>
-      <div class="tile"><i>${ic("receipt")}</i><b>${fmtK(k.tokens_total)}</b><span>Tokens in total</span></div></div>
-    <div class="card"><div class="card-head"><div><h2>Tokens per day</h2><p class="sub">Last 30 days. Your AI provider bills you for these directly.</p></div></div>${tokenChart(k.daily || [])}</div>
-    <div class="split">
-      <div class="card"><div class="card-head"><div><h2>What it was used for</h2><p class="sub">By kind of AI work, all time</p></div></div>${hbars(k.by_purpose || [])}</div>
-      <div class="card"><div class="card-head"><div><h2>By creator</h2><p class="sub">All time</p></div></div>${hbars(k.by_creator || [])}</div>
+  box.innerHTML = `<div class="tstrip" style="margin:-18px -20px 24px;padding:0 20px">
+      <span class="tstat">Service <b>${k.ready ? esc(k.provider || "Ready") : "Loudness mode"}</b></span>
+      ${k.ready && k.model ? `<span class="tstat">Model <b>${esc(k.model)}</b></span>` : ""}
+      <span class="tstat">Calls today <b>${(k.today_calls || 0).toLocaleString()}</b></span>
+      <span class="tstat">Tokens today <b>${fmtK(k.today_tokens)}</b></span>
+      <span class="tstat">Total calls <b>${(k.calls_total || 0).toLocaleString()}</b></span>
+      <span class="tstat">Total tokens <b>${fmtK(k.tokens_total)}</b></span>
     </div>
-    <div class="card"><div class="card-head"><div><h2>Recent AI activity</h2><p class="sub">The latest ${(k.recent || []).length} AI calls</p></div></div>
-      ${(k.recent || []).length ? `<div class="scroll"><table><tr><th>When</th><th>What</th><th>Creator</th><th>Video</th><th class="num">Tokens</th></tr>
-      ${k.recent.map(u => `<tr><td class="sub">${when(u.t)}</td><td>${esc(u.purpose)}</td><td>${esc(u.creator_name || "None")}</td><td class="sub">${esc(u.where || "")}</td><td class="num">${(u.tokens || 0).toLocaleString()}</td></tr>`).join("")}</table></div>`
-      : `<p class="help">No AI calls yet.</p>`}</div>`;
+    <div style="display:flex;flex-direction:column;gap:28px">
+      <div><div class="sec-bar"><h2>Tokens per day</h2><span class="sub">Last 30 days</span></div>${tokenChart(k.daily || [])}</div>
+      <div class="split" style="gap:28px">
+        <div><div class="sec-bar"><h2>By purpose</h2></div>${hbars(k.by_purpose || [])}</div>
+        <div><div class="sec-bar"><h2>By creator</h2></div>${hbars(k.by_creator || [])}</div>
+      </div>
+      <div><div class="sec-bar"><h2>Recent activity</h2><span class="sub">${(k.recent || []).length} calls</span></div>
+        ${(k.recent || []).length ? `<div class="scroll"><table><tr><th>When</th><th>What</th><th>Creator</th><th>Video</th><th class="num">Tokens</th></tr>
+        ${k.recent.map(u => `<tr><td class="sub">${when(u.t)}</td><td>${esc(u.purpose)}</td><td>${esc(u.creator_name || "None")}</td><td class="sub">${esc(u.where || "")}</td><td class="num">${(u.tokens || 0).toLocaleString()}</td></tr>`).join("")}</table></div>`
+        : `<p class="help">No AI calls yet.</p>`}</div>
+    </div>`;
 }
 
 /* ============================================================ settings */
 // With sign-in off there is no profile or password to manage. The AI section is for whoever runs the server.
 const setTabs = () => [
-  ...(S.status.user?.is_admin ? [["ai", "AI", "bolt", "Your AI service, model and key"]] : []),
-  ...(S.status.accounts === false ? [] : [["profile", "Profile", "user", "Your name, email and how you sign in"],
-                                          ["security", "Security", "lock", "Password and signing out"]]),
-  ["apps", "Connected apps", "plug", "Where your clips get posted"],
-  ...(S.status.user?.is_admin ? [["storage", "Storage", "folder", "Where videos and clips are kept"]] : [])];
-function aiHints() {
+  ...(S.status.user?.is_admin ? [["ai", "AI", "bolt"]] : []),
+  ...(S.status.accounts === false ? [] : [["profile", "Profile", "user"],
+                                          ["security", "Security", "lock"]]),
+  ["apps", "Connected apps", "plug"],
+  ...(S.status.user?.is_admin ? [["storage", "Storage", "folder"]] : [])];
+const AI_MODELS = {
+  gemini: ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-2.5-flash-lite"],
+  openai: ["gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "gpt-4.1"],
+  xai: ["grok-4", "grok-3-mini", "grok-3"],
+  groq: ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"],
+  openrouter: ["google/gemini-2.5-flash", "openai/gpt-4o-mini", "anthropic/claude-sonnet-4"],
+  anthropic: ["claude-sonnet-4-20250514", "claude-3-5-haiku-latest", "claude-3-7-sonnet-latest"],
+  ollama: ["llama3.1", "llama3.2", "qwen2.5:14b", "mistral"],
+  custom: []
+};
+function detectAiProvider(key) {
+  const v = (key || "").trim(), sel = $("#ai_provider");
+  if (!sel || v.length < 4) return;
+  let guess = "";
+  if (v.startsWith("AIza")) guess = "gemini";
+  else if (v.startsWith("sk-ant-")) guess = "anthropic";
+  else if (v.startsWith("sk-or-")) guess = "openrouter";
+  else if (v.startsWith("gsk_")) guess = "groq";
+  else if (v.startsWith("xai-")) guess = "xai";
+  else if (v.startsWith("sk-")) guess = "openai";
+  if (guess && sel.value !== guess && [...sel.options].some(o => o.value === guess)) {
+    sel.value = guess;
+    aiHints(true);
+  }
+}
+function syncAiModelFields() {
+  const m = $("#ai_model"), cw = $("#ai_custom_wrap"), fw = $("#ai_fallback_wrap"), fb = $("#ai_fallback");
+  if (!m || !fw || !fb) return;
+  const val = m.value;
+  if (cw) cw.hidden = val !== "__custom__";
+  const hasModel = val && (val !== "__custom__" || ($("#ai_model_custom")?.value || "").trim());
+  fw.hidden = !hasModel;
+  if (hasModel) {
+    const pvId = $("#ai_provider")?.value || "gemini";
+    const list = (AI_MODELS[pvId] || []).filter(x => x !== val);
+    const curFb = fb.value;
+    fb.innerHTML = `<option value="">None</option>` + list.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join("");
+    if (curFb && list.includes(curFb)) fb.value = curFb;
+  }
+}
+function aiHints(resetModels = false) {
   const k = S.ai, sel = $("#ai_provider"); if (!k || !sel) return;
   const pv = k.providers.find(x => x.id === sel.value) || k.providers[0], same = pv.id === k.provider;
   $("#ai_key").placeholder = same && k.has_key ? `Saved${k.key_hint ? ", ends in " + k.key_hint : ""}. Paste a new key to replace it` : pv.needs_key ? "Paste your key" : "Not needed";
-  $("#ai_keyhint").innerHTML = pv.key_url ? `${pv.needs_key ? "Get a key at" : "Set it up at"} <a href="${esc(pv.key_url)}" target="_blank" rel="noopener">${esc(pv.key_url.replace("https://", ""))}</a>. The key stays on this server and is never shown again.` : "The key stays on this server and is never shown again.";
-  $("#ai_model").placeholder = pv.example ? "For example " + pv.example : "The model id, exactly as the service names it";
   $("#ai_base").placeholder = pv.address || "http://127.0.0.1:1234/v1";
   $("#ai_basewrap").hidden = pv.id !== "custom" && !(same && k.base_url);
+  const mSel = $("#ai_model"), fbSel = $("#ai_fallback"), cIn = $("#ai_model_custom");
+  const list = AI_MODELS[pv.id] || [];
+  const savedPrimary = !resetModels && same ? (k.models?.[0] || "") : "";
+  const savedFallback = !resetModels && same ? (k.models?.[1] || "") : "";
+  mSel.innerHTML = `<option value="">Select a model</option>` + list.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join("") + `<option value="__custom__">Custom model ID…</option>`;
+  if (savedPrimary && list.includes(savedPrimary)) {
+    mSel.value = savedPrimary;
+  } else if (savedPrimary) {
+    mSel.value = "__custom__";
+    if (cIn) cIn.value = savedPrimary;
+  } else {
+    mSel.value = "";
+    if (cIn) cIn.value = "";
+  }
+  syncAiModelFields();
+  if (savedFallback && fbSel && [...fbSel.options].some(o => o.value === savedFallback)) fbSel.value = savedFallback;
 }
 async function drawSettings() {
   const box = $("#sform"); if (!box) return;
   const tab = S.stab || setTabs()[0][0], me = S.status.user;
-  box.innerHTML = `<div class="set-layout"><nav class="set-nav" aria-label="Settings sections">${setTabs().map(([k, l, i, h]) =>
-      `<a href="${pathFor("settings", k)}" class="set-link ${k === tab ? "on" : ""}" data-act="settab" data-k="${k}">${ic(i)}<span><b>${l}</b><small>${h}</small></span></a>`).join("")}</nav>
+  box.innerHTML = `<div class="set-layout"><nav class="set-nav" aria-label="Settings sections">${setTabs().map(([k, l, i]) =>
+      `<a href="${pathFor("settings", k)}" class="set-link ${k === tab ? "on" : ""}" data-act="settab" data-k="${k}">${ic(i)}<span><b>${l}</b></span></a>`).join("")}</nav>
     <div class="set-body" id="setbody"><div class="set-load">Loading…</div></div></div>`;
   const body = $("#setbody");
   try {
     if (tab === "ai") {
       const k = S.ai = await api("/api/ai");
-      body.innerHTML = `<section class="set-sec"><h2>AI</h2><p class="help">ClipForge uses an AI model to pick the moments worth clipping and to write hooks, titles and captions. Use your own key from any of these services. You pay that service directly. Without a key, clips are picked by loudness.</p>
-          <div class="ai-state">${k.ready ? `<span class="pill ok">${ic("check")}Ready</span><span class="sub">${esc(k.label)} · ${esc(k.models[0] || "")}</span>` : `<span class="pill warn">Not set up</span><span class="sub">Choose a service, paste your key and pick a model.</span>`}</div>
+      body.innerHTML = `<section class="set-sec"><h2>AI</h2>
+          <div class="ai-state" style="margin-top:10px">${k.ready ? `<span class="pill ok">${ic("check")}Ready</span><span class="sub">${esc(k.label)} · ${esc(k.models[0] || "")}</span>` : `<span class="pill warn">Not set up</span>`}</div>
           <div class="ai-form">
             <label class="f">AI service<select id="ai_provider">${k.providers.map(x => `<option value="${esc(x.id)}" ${x.id === k.provider ? "selected" : ""}>${esc(x.label)}</option>`).join("")}</select></label>
-            <label class="f">Key<input id="ai_key" type="password" autocomplete="off" spellcheck="false"><span class="hint" id="ai_keyhint"></span></label>
-            <label class="f" id="ai_basewrap">Address<input id="ai_base" value="${esc(k.base_url || "")}" spellcheck="false"><span class="hint">Where the service answers. Only needed for a custom service.</span></label>
-            <label class="f">Model<span class="with"><input id="ai_model" list="ai_models" value="${esc(k.models.join(", "))}" spellcheck="false"><button class="btn" type="button" data-act="aimodels">Find models</button></span>
-              <datalist id="ai_models"></datalist><span class="hint">A fast, inexpensive model is the right choice. Add a second one after a comma to fall back on.</span></label>
+            <label class="f">Key<input id="ai_key" type="password" autocomplete="off" spellcheck="false"></label>
+            <label class="f" id="ai_basewrap">Address<input id="ai_base" value="${esc(k.base_url || "")}" spellcheck="false"></label>
+            <label class="f">Model<select id="ai_model"></select></label>
+            <label class="f" id="ai_custom_wrap" hidden>Custom model ID<input id="ai_model_custom" placeholder="Model ID" spellcheck="false"></label>
+            <label class="f" id="ai_fallback_wrap" hidden>Fallback model (optional)<select id="ai_fallback"></select></label>
           </div>
           <div class="row" style="margin-top:20px"><button class="btn primary" data-act="aisave">Save and test</button>${k.ready ? `<button class="btn" data-act="aitest">Test again</button>` : ""}</div></section>`;
-      aiHints();
+      aiHints(false);
     }
     if (tab === "profile") {
       const joined = me.created_at ? new Date(me.created_at * 1000).toLocaleDateString([], {day: "numeric", month: "long", year: "numeric"}) : "";
@@ -2284,8 +2344,8 @@ async function drawSettings() {
         return `<div class="appcard"><span class="applogo" style="background:${bg}">${logo}</span>
           <div class="apptx"><b>${name}</b><span>${desc}</span>${listOf(accs)}</div><div class="appact">${act}</div>${panel}</div>`;
       };
-      body.innerHTML = `<section class="set-sec"><h2>Connected apps</h2><p class="help">Connect the accounts ClipForge posts clips to: press Connect, sign in on the platform's own page, and you're back here. ClipForge never sees your passwords. Then pick which accounts each creator posts to, in that creator's Setup.</p>
-        <div class="apps">
+      body.innerHTML = `<section class="set-sec"><h2>Connected apps</h2>
+        <div class="apps" style="margin-top:12px">
           ${card("youtube", "YouTube", yt, "#FF0000", "Post clips to your channel as Shorts.")}
           ${card("instagram", "Instagram", ig, "linear-gradient(45deg,#F58529,#DD2A7B,#8134AF)", "Post clips as Reels. Needs a Creator or Business account.")}
           ${card("tiktok", "TikTok", tt, "#000", "Post clips straight to your TikTok.")}
@@ -2408,7 +2468,8 @@ document.addEventListener("change", async e => {
     if (t.id === "o_captions") t.dataset.overridden = "true";
     syncCaptionStyle(t);
   }
-  if (t.id === "ai_provider") { $("#ai_models").innerHTML = ""; if (S.ai && t.value !== S.ai.provider) { $("#ai_model").value = ""; $("#ai_base").value = ""; } return aiHints(); }
+  if (t.id === "ai_provider") { if (S.ai && t.value !== S.ai.provider) $("#ai_base").value = ""; return aiHints(true); }
+  if (t.id === "ai_model") { return syncAiModelFields(); }
   if (t.dataset.sel) {
     const k = t.dataset.sel;
     if (t.checked) sel().add(k); else sel().delete(k);
@@ -2435,20 +2496,13 @@ document.addEventListener("click", async e => {
   if (b.tagName === "A") e.preventDefault();
   try {
     if (a === "go") { closePops(); return go(d.v, d.tab); }
-    if (a === "aimodels") {
-      b.disabled = true;
-      try {
-        const r = await send("/api/ai/models", {provider: $("#ai_provider").value, base_url: $("#ai_base").value, key: $("#ai_key").value});
-        $("#ai_models").innerHTML = r.models.map(m => `<option value="${esc(m)}">`).join("");
-        toast(r.models.length ? `${r.models.length} models found. Click the model box to pick one.` : "The service listed no models. Type the model yourself.", r.models.length ? "ok" : "");
-        if (r.models.length) $("#ai_model").focus();
-      } finally { b.disabled = false; }
-      return;
-    }
     if (a === "aisave" || a === "aitest") {
       b.disabled = true;
       try {
-        if (a === "aisave") await send("/api/ai", {provider: $("#ai_provider").value, models: $("#ai_model").value, base_url: $("#ai_base").value, key: $("#ai_key").value}, "PUT");
+        const pm = $("#ai_model").value === "__custom__" ? ($("#ai_model_custom")?.value || "").trim() : $("#ai_model").value;
+        const fb = $("#ai_fallback")?.value || "";
+        const modelsStr = [pm, fb].filter(Boolean).join(", ");
+        if (a === "aisave") await send("/api/ai", {provider: $("#ai_provider").value, models: modelsStr, base_url: $("#ai_base").value, key: $("#ai_key").value}, "PUT");
         let ok = null, why = "";
         try { ok = await send("/api/ai/test"); } catch (err) { why = err.message; }
         S.status = await api("/api/status"); drawShell(); await drawSettings();
