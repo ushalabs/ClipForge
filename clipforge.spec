@@ -7,16 +7,19 @@ datas = [("web", "web"), ("studio/fonts", "studio/fonts")]
 binaries = []
 hiddenimports = []
 
-for pkg in ("sherpa_onnx", "soundfile", "yt_dlp", "uvicorn", "fastapi", "starlette", "sqlalchemy", "httpx", "webview", "pystray", "PIL"):
+for pkg in ("sherpa_onnx", "soundfile", "yt_dlp", "uvicorn", "fastapi", "starlette", "sqlalchemy", "httpx", "webview", "pystray", "PIL", "pythonnet", "clr_loader"):
     try:
         d, b, h = collect_all(pkg)
         datas += d
         binaries += b
         hiddenimports += h
     except Exception:
-        hiddenimports += collect_submodules(pkg)
+        try:
+            hiddenimports += collect_submodules(pkg)
+        except Exception:
+            hiddenimports.append(pkg)
 
-for extra in ("studio.server", "studio.desktop", "psycopg"):
+for extra in ("studio", "studio.server", "studio.desktop", "psycopg"):
     try:
         hiddenimports += collect_submodules(extra)
     except Exception:

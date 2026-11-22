@@ -9,6 +9,7 @@ import time
 import urllib.parse
 import urllib.request
 import webbrowser
+from pathlib import Path
 
 LOADING_HTML = """<!doctype html>
 <html lang="en">
@@ -137,7 +138,29 @@ def _parse_args(argv=None):
     return p.parse_args(argv)
 
 
+def _ensure_stdio():
+    """Ensure stdout/stderr are writable streams when launched without a console (console=False / pythonw)."""
+    if sys.stdout is not None and sys.stderr is not None:
+        return
+    base = Path(os.environ.get("LOCALAPPDATA") or Path.home()) if sys.platform == "win32" else Path.home()
+    log_path = base / "ClipForge" / "desktop.log"
+    stream = None
+    try:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        stream = open(log_path, "a", encoding="utf-8", buffering=1)
+    except OSError:
+        try:
+            stream = open(os.devnull, "w", encoding="utf-8")
+        except OSError:
+            return
+    if sys.stdout is None:
+        sys.stdout = stream
+    if sys.stderr is None:
+        sys.stderr = stream
+
+
 def main(argv=None):
+    _ensure_stdio()
     args = _parse_args(argv)
     try:
         import webview
@@ -172,7 +195,7 @@ def main(argv=None):
         import uvicorn
         from . import live as live_mod, server, storage
 
-        uv_config = uvicorn.Config(server.app, host="127.0.0.1", port=port, log_level="warning", backlog=4096)
+        uv_config = uvicorn.Config(server.app, host="127.0.0.1", port=port, log_level="warning", log_config=None, backlog=4096)
         uv_server = uvicorn.Server(uv_config)
         uv_server.install_signal_handlers = lambda: None
 
