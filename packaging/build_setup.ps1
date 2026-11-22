@@ -50,6 +50,7 @@ if (-not $NsisCompiler) {
         $nsisCandidates.Add((Join-Path $env:ProgramFiles "NSIS\makensis.exe"))
     }
     foreach ($searchRoot in @(
+        (Join-Path $env:LOCALAPPDATA "NSIS"),
         (Join-Path $env:LOCALAPPDATA "Microsoft\WinGet\Packages"),
         (Join-Path $env:USERPROFILE "scoop\apps\nsis"),
         (Join-Path $env:ProgramData "chocolatey\lib")
