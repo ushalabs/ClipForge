@@ -2202,6 +2202,37 @@ const AI_MODELS = {
   ollama: ["llama3.1", "llama3.2", "qwen2.5:14b", "mistral"],
   custom: []
 };
+function currentAiModels(pvId) {
+  const live = S.aiLiveModels?.[pvId];
+  return live && live.length ? live : (AI_MODELS[pvId] || []);
+}
+let aiFetchTimer = 0, aiFetchSeq = 0;
+async function fetchAiModels(immediate = false) {
+  clearTimeout(aiFetchTimer);
+  const run = async () => {
+    const pvSel = $("#ai_provider"), keyIn = $("#ai_key"), baseIn = $("#ai_base");
+    if (!pvSel) return;
+    const pv = pvSel.value, key = (keyIn?.value || "").trim(), base = (baseIn?.value || "").trim();
+    const hasSaved = S.ai?.has_key && S.ai?.provider === pv;
+    if (!key && !hasSaved && pv !== "ollama" && pv !== "custom") return;
+    const seq = ++aiFetchSeq;
+    try {
+      const r = await send("/api/ai/models", {provider: pv, base_url: base, key});
+      if (seq !== aiFetchSeq || !$("#ai_provider") || $("#ai_provider").value !== pv) return;
+      if (Array.isArray(r.models) && r.models.length) {
+        S.aiLiveModels = {...(S.aiLiveModels || {}), [pv]: r.models};
+        const mSel = $("#ai_model"), cur = mSel?.value || "", curFb = $("#ai_fallback")?.value || "";
+        const list = currentAiModels(pv);
+        mSel.innerHTML = `<option value="">Select a model (${list.length} available)</option>` + list.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join("") + `<option value="__custom__">Custom model ID…</option>`;
+        if (cur && (cur === "__custom__" || list.includes(cur))) mSel.value = cur;
+        syncAiModelFields();
+        if (curFb && $("#ai_fallback") && [...$("#ai_fallback").options].some(o => o.value === curFb)) $("#ai_fallback").value = curFb;
+      }
+    } catch {}
+  };
+  if (immediate) return run();
+  aiFetchTimer = setTimeout(run, 450);
+}
 function detectAiProvider(key) {
   const v = (key || "").trim(), sel = $("#ai_provider");
   if (!sel || v.length < 4) return;
@@ -2216,6 +2247,7 @@ function detectAiProvider(key) {
     sel.value = guess;
     aiHints(true);
   }
+  fetchAiModels(false);
 }
 function syncAiModelFields() {
   const m = $("#ai_model"), cw = $("#ai_custom_wrap"), fw = $("#ai_fallback_wrap"), fb = $("#ai_fallback");
@@ -2226,7 +2258,7 @@ function syncAiModelFields() {
   fw.hidden = !hasModel;
   if (hasModel) {
     const pvId = $("#ai_provider")?.value || "gemini";
-    const list = (AI_MODELS[pvId] || []).filter(x => x !== val);
+    const list = currentAiModels(pvId).filter(x => x !== val);
     const curFb = fb.value;
     fb.innerHTML = `<option value="">None</option>` + list.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join("");
     if (curFb && list.includes(curFb)) fb.value = curFb;
@@ -2239,7 +2271,7 @@ function aiHints(resetModels = false) {
   $("#ai_base").placeholder = pv.address || "http://127.0.0.1:1234/v1";
   $("#ai_basewrap").hidden = pv.id !== "custom" && !(same && k.base_url);
   const mSel = $("#ai_model"), fbSel = $("#ai_fallback"), cIn = $("#ai_model_custom");
-  const list = AI_MODELS[pv.id] || [];
+  const list = currentAiModels(pv.id);
   const savedPrimary = !resetModels && same ? (k.models?.[0] || "") : "";
   const savedFallback = !resetModels && same ? (k.models?.[1] || "") : "";
   mSel.innerHTML = `<option value="">Select a model</option>` + list.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join("") + `<option value="__custom__">Custom model ID…</option>`;
@@ -2254,6 +2286,7 @@ function aiHints(resetModels = false) {
   }
   syncAiModelFields();
   if (savedFallback && fbSel && [...fbSel.options].some(o => o.value === savedFallback)) fbSel.value = savedFallback;
+  fetchAiModels(true);
 }
 async function drawSettings() {
   const box = $("#sform"); if (!box) return;
@@ -2521,7 +2554,10 @@ document.addEventListener("click", async e => {
         try { ok = await send("/api/ai/test"); } catch (err) { why = err.message; }
         S.status = await api("/api/status"); drawShell(); await drawSettings();
         if (ok) toast(`Saved. ${ok.model} answered, so the AI is ready.`, "ok");
-        else toast(`Saved, but the test failed. ${why}`, "bad");
+        else {
+          const unsupported = /403|404|429|not found|not supported|quota|billing|permission/i.test(why);
+          toast(unsupported ? "Your API key does not support this model (or free-tier quota is exceeded). Choose a different model." : `Saved, but the test failed. ${why}`, "bad");
+        }
       } finally { b.disabled = false; }
       return;
     }
