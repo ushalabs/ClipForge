@@ -9,8 +9,8 @@
 | Phase | Name | Status | Commit | Notes |
 |---|---|---|---|---|
 | 0 | Immediate migration and rebrand | Complete | `e10b92b` | `FRAMEFORGE_*` env vars with `CLIPFORGE_*` fallback, visible `FrameForge` branding & logos |
-| 1 | Universal ingestion | Complete | — | `studio/sources/` adapter protocol, SSRF/URL/path hardening, direct + yt-dlp adapters |
-| 2 | Frame extraction and asset catalog | Pending | — | Scene-balanced extraction, perceptual dedup, catalog |
+| 1 | Universal ingestion | Complete | `b9d7367` | `studio/sources/` adapter protocol, SSRF/URL/path hardening, direct + yt-dlp adapters |
+| 2 | Frame extraction and asset catalog | Complete | Pending | `studio/assets/` scene-balanced extraction, quality/dHash dedup, contact sheet, shortfall |
 | 3 | Visual intelligence and research | Pending | — | Tags, transcript alignment, semantic retrieval |
 | 4 | Original script and storyboard | Pending | — | Structured LLM contracts, schema validation |
 | 5 | Narration and timing | Pending | — | Local TTS, forced alignment, monotonic cues |
