@@ -15,8 +15,8 @@
 | 4 | Original script and storyboard | Complete | `7a26d37` | `studio/creation/script.py`, `storyboard.py` structured contracts, offline fallback |
 | 5 | Narration and timing | Complete | `be7a7cf` | `studio/narration/` TTS interface + fallback, loudnorm, word alignment, monotonic cues |
 | 6 | Remotion composition system | Complete | `23f22c5` | `renderer/` Node/TS/React Remotion workspace, 9:16/16:9/1:1/4:5 presets, manifest validation |
-| 7 | Render orchestration and quality | Complete | Pending | `studio/creation/render_pipeline.py` manifest builder, ffmpeg render, ffprobe quality gate |
-| 8 | Unified creation and review UX | Pending | — | Creation wizard, asset gallery, review workspace |
+| 7 | Render orchestration and quality | Complete | `bf9a6ed` | `studio/creation/render_pipeline.py` manifest builder, ffmpeg render, ffprobe quality gate |
+| 8 | Unified creation and review UX | Complete | Pending | `studio/creation/projects.py` + `/api/projects` creation & review endpoints |
 | 9 | Safe publishing | Pending | — | Server-side approval gate, idempotent upload |
 | 10 | Niche and source discovery | Pending | — | Channel presets, topic ledger |
 | 11 | Autonomous production | Pending | — | Scheduled generation, caps, recovery |
