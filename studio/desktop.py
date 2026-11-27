@@ -1,4 +1,4 @@
-"""Native desktop window wrapper for ClipForge using pywebview and optional system tray."""
+"""Native desktop window wrapper for FrameForge using pywebview and optional system tray."""
 import argparse
 import json
 import os
@@ -15,7 +15,7 @@ LOADING_HTML = """<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>ClipForge</title>
+<title>FrameForge</title>
 <style>
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;background:#0F1012;color:#F4F4F5;font:15px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
@@ -33,8 +33,8 @@ body{display:flex;align-items:center;justify-content:center}
     <rect x="50" y="50" width="34" height="120" rx="10" fill="#0EA5E9"/>
     <path d="M100 62Q100 50 111 56L170 100Q180 110 170 120L111 164Q100 170 100 158Z" fill="#FFFFFF"/>
   </svg>
-  <div class="title">ClipForge</div>
-  <div class="pill" id="status">Starting ClipForge...</div>
+  <div class="title">FrameForge</div>
+  <div class="pill" id="status">Starting FrameForge...</div>
 </div>
 </body>
 </html>
@@ -54,17 +54,17 @@ def port_free(port: int, host: str = "127.0.0.1") -> bool:
 
 
 def is_clipforge_running(port: int, host: str = "127.0.0.1", timeout: float = 1.5) -> bool:
-    """Return True if an existing ClipForge server is already answering on port."""
+    """Return True if an existing FrameForge server is already answering on port."""
     try:
         with urllib.request.urlopen(f"http://{host}:{port}/app", timeout=timeout) as r:
             body = r.read(65536)
-        return r.status == 200 and b"ClipForge" in body
+        return r.status == 200 and b"FrameForge" in body
     except Exception:  # noqa: BLE001
         return False
 
 
 def find_port(preferred: int = 8765, host: str = "127.0.0.1") -> tuple[int, bool]:
-    """Find a running ClipForge instance to reuse, or an available local port.
+    """Find a running FrameForge instance to reuse, or an available local port.
 
     Returns (port, already_running).
     """
@@ -116,7 +116,7 @@ class DesktopApi:
 
 
 def build_tray_icon():
-    """Create a crisp 64x64 ClipForge icon with Pillow, or None if Pillow is unavailable."""
+    """Create a crisp 64x64 FrameForge icon with Pillow, or None if Pillow is unavailable."""
     try:
         from PIL import Image, ImageDraw
     except ImportError:
@@ -131,7 +131,7 @@ def build_tray_icon():
 
 
 def _parse_args(argv=None):
-    p = argparse.ArgumentParser(prog="clipforge-desktop", description="ClipForge Desktop Application")
+    p = argparse.ArgumentParser(prog="clipforge-desktop", description="FrameForge Desktop Application")
     p.add_argument("--port", type=int, default=None, help="Preferred local port (default: 8765)")
     p.add_argument("--fallback-browser", action="store_true", help="Open in the default browser if pywebview is unavailable")
     p.add_argument("--tray-on-close", action="store_true", help="Minimize to system tray when closing the window")
@@ -143,7 +143,7 @@ def _ensure_stdio():
     if sys.stdout is not None and sys.stderr is not None:
         return
     base = Path(os.environ.get("LOCALAPPDATA") or Path.home()) if sys.platform == "win32" else Path.home()
-    log_path = base / "ClipForge" / "desktop.log"
+    log_path = base / "FrameForge" / "desktop.log"
     stream = None
     try:
         log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -166,7 +166,7 @@ def main(argv=None):
             import ctypes
             from . import __version__
 
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(f"UshaLabs.ClipForge.{__version__}")
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(f"UshaLabs.FrameForge.{__version__}")
         except Exception:  # noqa: BLE001
             pass
     args = _parse_args(argv)
@@ -174,7 +174,7 @@ def main(argv=None):
         import webview
     except ImportError:
         print(
-            "\n  pywebview is required to launch ClipForge in desktop mode.\n"
+            "\n  pywebview is required to launch FrameForge in desktop mode.\n"
             "  Install desktop dependencies with:\n\n"
             "      pip install -r requirements-desktop.txt\n",
             file=sys.stderr,
@@ -217,7 +217,7 @@ def main(argv=None):
         server_thread.start()
 
     window = webview.create_window(
-        "ClipForge",
+        "FrameForge",
         html=LOADING_HTML,
         width=1280,
         height=840,
@@ -248,7 +248,7 @@ def main(argv=None):
             except Exception:  # noqa: BLE001
                 pass
         if live_mod is not None:
-            live_mod.stop_all("ClipForge closed")
+            live_mod.stop_all("FrameForge closed")
         if uv_server is not None:
             uv_server.should_exit = True
 
@@ -274,11 +274,11 @@ def main(argv=None):
                     pass
 
             menu = pystray.Menu(
-                pystray.MenuItem("Open ClipForge", _open_window, default=True),
+                pystray.MenuItem("Open FrameForge", _open_window, default=True),
                 pystray.MenuItem("Open in Browser", _open_browser),
-                pystray.MenuItem("Quit ClipForge", _quit_app),
+                pystray.MenuItem("Quit FrameForge", _quit_app),
             )
-            tray_icon = pystray.Icon("clipforge", tray_img, "ClipForge", menu)
+            tray_icon = pystray.Icon("clipforge", tray_img, "FrameForge", menu)
             threading.Thread(target=tray_icon.run, daemon=True, name="clipforge-tray").start()
     except Exception:  # noqa: BLE001
         tray_icon = None
@@ -301,7 +301,7 @@ def main(argv=None):
         if already_running or wait_ready(port, stop_check=lambda: bool(server_error["msg"]) or force_quit["yes"]):
             window.load_url(app_url)
             return
-        msg = server_error["msg"] or "ClipForge server failed to start."
+        msg = server_error["msg"] or "FrameForge server failed to start."
         try:
             window.evaluate_js(f"document.getElementById('status').textContent = {json.dumps(msg)};")
         except Exception:  # noqa: BLE001

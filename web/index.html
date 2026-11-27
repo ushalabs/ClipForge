@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ClipForge</title>
+<title>FrameForge</title>
 <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg">
 <style>
 @font-face{font-family:"Poppins";font-style:normal;font-weight:800;font-display:swap;src:url("/fonts/Poppins-ExtraBold.ttf") format("truetype")}
@@ -844,7 +844,7 @@ dialog[open]{animation:fadein .16s ease}
 <body>
 <div class="app" id="app">
   <aside class="side" aria-label="Sidebar">
-    <div class="side-head"><img class="logo" src="/brand/logo-light.svg" alt="ClipForge"><img class="mark" src="/brand/favicon.svg" alt="ClipForge">
+    <div class="side-head"><img class="logo" src="/brand/logo-light.svg" alt="FrameForge"><img class="mark" src="/brand/favicon.svg" alt="FrameForge">
       <button class="icon-btn collapse" data-act="collapse" id="collapseBtn" aria-label="Collapse sidebar"></button></div>
     <nav class="nav" id="nav" aria-label="Main"></nav>
     <div class="side-foot" id="foot"></div>
@@ -963,15 +963,15 @@ function startTour() {
   if (S.view !== "overview") go("overview");
   // sel: what the step points at.  side: it lives in the sidebar (opened for the step on phones).  dock: where the card sits on phones.
   const steps = [
-    {t: "Welcome to ClipForge", x: "Long videos and live streams go in, captioned vertical clips come out. Here is a quick look around.",
+    {t: "Welcome to FrameForge", x: "Long videos and live streams go in, captioned vertical clips come out. Here is a quick look around.",
      chips: [["link", "Paste a link"], ["scissors", "Get clips", 1], ["radio", "Live streams"], ["send", "Post them"]]},
-    {t: "Start with any video", x: "Paste a YouTube, Twitch or Kick link here, or upload a file. ClipForge finds the best moments and makes each one a short with captions.",
+    {t: "Start with any video", x: "Paste a YouTube, Twitch or Kick link here, or upload a file. FrameForge finds the best moments and makes each one a short with captions.",
      sel: "#addform", dock: "bottom", chips: [["link", "YouTube"], ["link", "Twitch"], ["link", "Kick"], ["up", "Upload", 1]]},
     {t: "Your workspace at a glance", x: "The telemetry bar shows active recordings, clips made today, queued posts, views, and YouTube API quota.",
      sel: ".tstrip", dock: "bottom", chips: [["radio", "Recording"], ["scissors", "Clips today", 1], ["send", "Posted"], ["clock", "Waiting"]]},
     {t: "Every video in one place", x: "All videos lists everything you have processed. Open a video to see its clips, trim them, change the captions or download them.",
      sel: '#nav [data-v="library"]', side: 1, dock: "bottom", chips: [["film", "All videos", 1], ["play", "Preview"], ["sliders", "Edit"], ["down", "Download"]]},
-    {t: "Add the creators you clip", x: "Give each creator a workspace with their channels. ClipForge can record them when they go live and clip the highlights as they happen.",
+    {t: "Add the creators you clip", x: "Give each creator a workspace with their channels. FrameForge can record them when they go live and clip the highlights as they happen.",
      sel: '#nav [data-act="newcreator"]', side: 1, dock: "bottom", chips: [["plusc", "New creator", 1], ["radio", "Record live"], ["bolt", "Clip highlights"]]},
     {t: "The AI picks the moments", x: "This shows which AI this server uses and how much it has worked today. Open it to see what the AI was used for.",
      sel: "#foot .foot-row", side: 1, dock: "top", chips: [["bolt", "AI", 1], ["chart", "See usage"]]},
@@ -1127,7 +1127,7 @@ function drawStream() {
     pl.dataset.src = src;
     const ipHost = /^[\d.]+$|^\[/.test(location.hostname);
     pl.innerHTML = k === "twitch" && ipHost
-      ? `<div class="noembed">${platLogo(k)}<b>Twitch only plays inside sites with a web address</b><span>It will play here once ClipForge is on its domain, or open ClipForge at localhost instead of ${esc(location.hostname)}.</span><a class="btn sm" href="${esc(p.channel)}" target="_blank" rel="noopener">Watch on Twitch ${ic("upright")}</a></div>`
+      ? `<div class="noembed">${platLogo(k)}<b>Twitch only plays inside sites with a web address</b><span>It will play here once FrameForge is on its domain, or open FrameForge at localhost instead of ${esc(location.hostname)}.</span><a class="btn sm" href="${esc(p.channel)}" target="_blank" rel="noopener">Watch on Twitch ${ic("upright")}</a></div>`
       : src ? `<iframe src="${src}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="${PLAT[k].name} live stream"></iframe>` : "";
   }
   const stats = [p.viewers != null ? [fmtK(p.viewers), "watching"] : null, p.started ? [since(p.started), "live for"] : null,
@@ -1139,7 +1139,7 @@ function drawStream() {
     ${stats.length ? `<div class="sstats">${stats.map(([v, l]) => `<div><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join("")}</div>` : ""}
     <div class="cta">${rec
       ? `<button class="btn danger" data-act="stoplive" data-j="${esc(rec)}">${ic("stop")}Stop recording</button><small>Recording now. Clips appear below as they're made.</small>`
-      : `<button class="btn primary" data-act="golive" data-url="${esc(p.channel)}"><span class="rdot"></span>Record this stream</button><small>ClipForge watches it and clips the best moments as they happen.</small>`}</div>`);
+      : `<button class="btn primary" data-act="golive" data-url="${esc(p.channel)}"><span class="rdot"></span>Record this stream</button><small>FrameForge watches it and clips the best moments as they happen.</small>`}</div>`);
 }
 function liveOn(c) { return Object.entries(c.profiles || {}).filter(([k, p]) => p.live && c.channels?.[k] === p.channel).sort(([, p]) => p.channel === c.channel ? -1 : 1); }
 function statusBadge(c) {
@@ -1247,13 +1247,13 @@ async function openFeedback(kind = "bug", context = "") {
 }
 function updateHow() {
   const up = S.status?.update, d = $("#formdlg"); if (!up || d.open) return;
-  const ai = "Update this ClipForge folder to the latest version from GitHub (git pull), keep my .env and data folder as they are, install any new requirements, and restart ClipForge. Read AGENTS.md first: if this folder's path is long or inside a temporary or assistant workspace, ask me before moving it to a short folder like C:\\clipforge, and never delete anything without asking.";
+  const ai = "Update this FrameForge folder to the latest version from GitHub (git pull), keep my .env and data folder as they are, install any new requirements, and restart FrameForge. Read AGENTS.md first: if this folder's path is long or inside a temporary or assistant workspace, ask me before moving it to a short folder like C:\\clipforge, and never delete anything without asking.";
   const cmd = (label, text) => `<h3>${label}</h3><div class="cmd"><code>${esc(text)}</code><button class="btn sm" type="button" data-act="copytext" data-t="${esc(text)}">${ic("copy")}Copy</button></div>`;
-  d.innerHTML = `<form method="dialog" class="dlg upd"><h2>${up.restart ? "The new version is ready" : "A new version of ClipForge is out"}</h2>
-    <p class="help">${up.restart ? "The new files are already in the ClipForge folder. <b>Close ClipForge and start it again</b> to use them." : `You're on <b>${esc(up.current)}</b>. ${up.behind ? `${up.behind} update${up.behind === 1 ? " has" : "s have"} been added since.` : "Newer changes have been added since."}`} Your settings, keys and clips stay as they are.</p>
+  d.innerHTML = `<form method="dialog" class="dlg upd"><h2>${up.restart ? "The new version is ready" : "A new version of FrameForge is out"}</h2>
+    <p class="help">${up.restart ? "The new files are already in the FrameForge folder. <b>Close FrameForge and start it again</b> to use them." : `You're on <b>${esc(up.current)}</b>. ${up.behind ? `${up.behind} update${up.behind === 1 ? " has" : "s have"} been added since.` : "Newer changes have been added since."}`} Your settings, keys and clips stay as they are.</p>
     ${up.notes.length ? `<ul>${up.notes.map(n => `<li>${esc(n.title)} <small>${esc(n.date)}</small></li>`).join("")}</ul>` : ""}
-    ${up.restart ? "" : cmd("Ask your AI coding assistant (Claude, Cursor, Copilot...)", ai) + cmd("Or run it yourself, in the ClipForge folder", "git pull && pip install -r requirements.txt")}
-    <p class="sub">${up.restart ? "" : "Then stop ClipForge and start it again. With Docker, run <code>git pull && docker compose up -d --build</code> instead. "}<a class="lnk" href="${esc(up.url)}" target="_blank" rel="noopener">See every change on GitHub</a></p>
+    ${up.restart ? "" : cmd("Ask your AI coding assistant (Claude, Cursor, Copilot...)", ai) + cmd("Or run it yourself, in the FrameForge folder", "git pull && pip install -r requirements.txt")}
+    <p class="sub">${up.restart ? "" : "Then stop FrameForge and start it again. With Docker, run <code>git pull && docker compose up -d --build</code> instead. "}<a class="lnk" href="${esc(up.url)}" target="_blank" rel="noopener">See every change on GitHub</a></p>
     <div class="dlg-foot"><button class="btn" value="later">Remind me next version</button><button class="btn primary" value="ok" autofocus>Got it</button></div></form>`;
   d.onclose = () => { if (d.returnValue === "later") { try { localStorage.setItem("clipforge_update_seen", up.latest); } catch {} drawShell(); } };
   d.returnValue = "ok"; d.showModal();
@@ -1277,6 +1277,7 @@ function drawShell() {  const nav = (v, icon, label, extra = "") => `<button cla
   put($("#nav"), nav("overview", navIc("home", "overview"), "Home") +
     nav("library", navIc("film", "library"), "All videos", (() => { const w = S.jobs.filter(j => ["queued", "running"].includes(j.status)).length;
       return w ? `<span class="working" title="${w} working now"><i></i>${w} working</span>` : S.jobs.length ? `<span class="count">${S.jobs.length}</span>` : ""; })()) +
+    nav("projects", navIc("bolt", "projects"), "Create Video") +
     `<h4><span>Creators</span></h4>` +
     S.creators.map(c => nav("c:" + c.id, cav(c), c.name,
       c.live_job ? `<span class="sb-tag rec" title="Recording now"><i></i>Rec</span>`
@@ -1297,7 +1298,8 @@ function drawShell() {  const nav = (v, icon, label, extra = "") => `<button cla
   const c = creator();
   const me = S.status.user;
   const kk = S.status.ai;
-  let title = {overview:"Studio", library:"All videos", settings:"Settings", usage:"AI usage"}[S.view] || "", sub = "", act = "";
+  let title = {overview:"Studio", library:"All videos", projects:"Create Video", settings:"Settings", usage:"AI usage"}[S.view] || "", sub = "", act = "";
+  if (S.view === "projects") sub = "Original video reconstruction and Remotion rendering.";
   if (S.view === "usage") sub = "AI tokens and calls.";
   if (S.view === "settings") sub = (S.status.accounts === false ? "AI key and connected apps." : "Profile, security and connected apps.");
   let pic = "", subHtml = null, tabs = "";
@@ -1321,17 +1323,17 @@ function drawShell() {  const nav = (v, icon, label, extra = "") => `<button cla
     const localAdmin = me?.is_admin && (inDesktop || location.hostname === "127.0.0.1" || location.hostname === "localhost");
     act = (kk && kk.ready === false && me?.is_admin ? `<button class="btn sm ghost" data-act="go" data-v="settings" data-tab="ai">${ic("bolt")}Add AI key</button>` : "")
         + (localAdmin ? `<button class="btn sm" data-act="storopen">${ic("folder")}Open folder</button>` : "")
-        + (!inDesktop && L.repo ? `<a class="btn sm" href="${esc(L.repo)}" target="_blank" rel="noopener" title="ClipForge on GitHub">${ic("github")}<span>GitHub</span></a>` : "")
+        + (!inDesktop && L.repo ? `<a class="btn sm" href="${esc(L.repo)}" target="_blank" rel="noopener" title="FrameForge on GitHub">${ic("github")}<span>GitHub</span></a>` : "")
         + (!inDesktop && L.follow ? `<a class="btn sm primary" href="${esc(L.follow)}" target="_blank" rel="noopener" title="Follow on Instagram">${ic("instagram")}Follow me</a>` : "");
   }
   const up = S.status.update;
   let upSeen = "";
   try { upSeen = localStorage.getItem("clipforge_update_seen") || ""; } catch {}
-  const upBar = up && up.latest !== upSeen ? `<div class="vb" role="status">${ic("up")}<span>${up.restart ? "<b>The new version is downloaded.</b> Close ClipForge and start it again to use it." : `A new version of ClipForge is out${up.behind ? `: <b>${up.behind} update${up.behind === 1 ? "" : "s"}</b> since yours` : ""}.`}</span>
+  const upBar = up && up.latest !== upSeen ? `<div class="vb" role="status">${ic("up")}<span>${up.restart ? "<b>The new version is downloaded.</b> Close FrameForge and start it again to use it." : `A new version of FrameForge is out${up.behind ? `: <b>${up.behind} update${up.behind === 1 ? "" : "s"}</b> since yours` : ""}.`}</span>
     <button class="btn sm primary" data-act="updhow">${up.restart ? "What's new" : "How to update"}</button><button class="btn sm ghost" data-act="updlater" aria-label="Hide until the next version">Later</button></div>` : "";
-  const toolBar = S.status.no_ffmpeg ? `<div class="vb" role="alert">${ic("warn")}<span><b>ClipForge can't make clips yet: ffmpeg isn't installed on this computer.</b> Open a terminal, run <code>winget install Gyan.FFmpeg</code> (Mac: <code>brew install ffmpeg</code>, Linux: <code>sudo apt install ffmpeg</code>), then close ClipForge and start it again.</span></div>` : "";
+  const toolBar = S.status.no_ffmpeg ? `<div class="vb" role="alert">${ic("warn")}<span><b>FrameForge can't make clips yet: ffmpeg isn't installed on this computer.</b> Open a terminal, run <code>winget install Gyan.FFmpeg</code> (Mac: <code>brew install ffmpeg</code>, Linux: <code>sudo apt install ffmpeg</code>), then close FrameForge and start it again.</span></div>` : "";
   const aiBar = !toolBar && S.status.ai?.problem && me?.is_admin && S.view !== "settings" ? `<div class="vb" role="status">${ic("warn")}<span><b>The AI isn't answering.</b> ${esc(S.status.ai.problem)} Until then, clips are picked by loudness.</span><button class="btn sm primary" data-act="go" data-v="settings" data-tab="ai">Open AI settings</button></div>` : "";
-  const diskBar = !toolBar && S.status.disk_full && S.view !== "settings" ? `<div class="vb" role="alert">${ic("warn")}<span><b>The drive ClipForge saves to is almost full, so it can't take new videos.</b> Free up space on it, or move ClipForge's folder to a bigger drive.</span>${me?.is_admin ? `<button class="btn sm primary" data-act="go" data-v="settings" data-tab="storage">Open Storage</button>` : ""}</div>` : "";
+  const diskBar = !toolBar && S.status.disk_full && S.view !== "settings" ? `<div class="vb" role="alert">${ic("warn")}<span><b>The drive FrameForge saves to is almost full, so it can't take new videos.</b> Free up space on it, or move FrameForge's folder to a bigger drive.</span>${me?.is_admin ? `<button class="btn sm primary" data-act="go" data-v="settings" data-tab="storage">Open Storage</button>` : ""}</div>` : "";
   put($("#vbanner"), toolBar ? toolBar : diskBar ? diskBar : aiBar ? aiBar : upBar ? upBar : me && me.verified === false ? `<div class="vb" role="status">${ic("warn")}<span>Confirm your email to start clipping. We sent a link to <b>${esc(me.email)}</b>.</span><button class="btn sm" data-act="resendverify">Send a new link</button></div>` : "");
   put($("#tpic"), pic); $("#tpic").classList.toggle("live", !!(c && (c.live_job || liveOn(c).length)));
   put($("#utabs"), tabs); $(".topbar").classList.toggle("tabbed", !!tabs);
@@ -1369,6 +1371,7 @@ function go(v, tab, fromHistory) {
   if (v === "overview") view.innerHTML = `<div id="add"></div><div id="ov" style="flex:1;min-height:0;display:flex;flex-direction:column"></div>`;
   else if (v === "library") view.innerHTML = `<div id="add"></div><div class="lib-scroll"><div id="jobs"></div></div>`;
   else if (v === "settings") view.innerHTML = `<div id="sform"></div>`;
+  else if (v === "projects") { view.innerHTML = `<div id="ff-projects"></div>`; loadProjects(); }
   else if (v === "usage") { view.innerHTML = `<div id="usage"></div>`; loadUsage(); }
   else view.innerHTML = `<div id="stream"></div><div id="cbody"></div>`;   // the live player stays put across tabs: no restart, no rebuffer
   if ($("#add")) drawAdd("compact");
@@ -1565,7 +1568,7 @@ async function lookUp(u) {
     if (e instanceof TypeError) {           // the request itself dropped (network blip): try once more quietly
       await new Promise(r => setTimeout(r, 800));
       try { return await api("/api/preview?url=" + encodeURIComponent(u)); }
-      catch (e2) { throw new Error(e2 instanceof TypeError ? "Couldn't reach ClipForge to check that link. Check your connection and paste it again." : e2.message); }
+      catch (e2) { throw new Error(e2 instanceof TypeError ? "Couldn't reach FrameForge to check that link. Check your connection and paste it again." : e2.message); }
     }
     throw e;
   }
@@ -2313,7 +2316,7 @@ async function drawSettings() {
     }
     if (tab === "profile") {
       const joined = me.created_at ? new Date(me.created_at * 1000).toLocaleDateString([], {day: "numeric", month: "long", year: "numeric"}) : "";
-      body.innerHTML = `<section class="set-sec"><h2>Profile</h2><p class="help">This is how you appear in ClipForge.</p>
+      body.innerHTML = `<section class="set-sec"><h2>Profile</h2><p class="help">This is how you appear in FrameForge.</p>
         <div class="prof">${meAvatar(me).replace('class="avatar me-pic"', 'class="avatar prof-pic"')}<div><b>${esc(me.name)}</b><span>${esc(me.email)}</span></div></div>
         <dl class="kv"><div><dt>Email</dt><dd>${esc(me.email)} ${me.verified === false ? `<span class="pill warn">Not confirmed</span>` : `<span class="pill ok">Confirmed</span>`}</dd></div>
           <div><dt>Sign-in method</dt><dd>${me.google ? `Google${me.has_password ? " and password" : ""}` : "Email and password"}</dd></div>
@@ -2327,7 +2330,7 @@ async function drawSettings() {
             <label class="f">${me.has_password ? "New password" : "Password"}<input id="pw_new" type="password" autocomplete="new-password" placeholder="At least 8 characters"></label></div>
           <div class="row" style="margin-top:14px"><button class="btn primary" data-act="pwsave">${me.has_password ? "Change password" : "Set password"}</button>
             ${me.has_password ? `<a class="btn ghost" href="/reset">Forgot it?</a>` : ""}</div></section>
-        <section class="set-sec"><h2>Sessions</h2><p class="help">Sign out of ClipForge on this device. Changing your password signs out every other device too.</p>
+        <section class="set-sec"><h2>Sessions</h2><p class="help">Sign out of FrameForge on this device. Changing your password signs out every other device too.</p>
           <button class="btn" data-act="logout">${ic("signout")}Sign out</button></section>
         <section class="set-sec"><h2 style="color:var(--bad)">Delete account</h2><p class="help">Removes your account and everything in it for good: creators, recordings, videos, clips and history.</p>
           <button class="btn danger" data-act="delaccount">${ic("trash")}Delete my account</button></section>`;
@@ -2336,16 +2339,16 @@ async function drawSettings() {
       const s = S.stor = await api("/api/storage");
       const usedPct = s.total_gb ? Math.min(100, Math.max(1, 100 * (s.total_gb - s.free_gb) / s.total_gb)) : 0;
       const gb = n => `${Number(n).toLocaleString(undefined, {maximumFractionDigits: 1})} GB`;
-      body.innerHTML = `<section class="set-sec"><h2>Storage</h2><p class="help">Everything ClipForge keeps is in one folder: your videos, clips, recordings, creators and settings. You can open it, back it up, or move it to a drive with more room.</p>
-          ${s.full ? `<div class="note" style="margin:0 0 14px">${ic("warn")}<span><b>This drive is almost full, so ClipForge can't take new videos.</b> ${gb(s.free_gb)} free on ${esc(s.drive)}; it needs at least ${gb(s.min_free_gb)}. Free up space, or move the folder to another drive below.</span></div>` : ""}
-          ${s.pending ? `<div class="note" style="margin:0 0 14px">${ic("clock")}<span><b>The folder changes to ${esc(s.pending)} the next time ClipForge starts.</b> Close ClipForge and start it again. <button class="btn sm ghost" data-act="storcancel">Undo</button></span></div>` : ""}
+      body.innerHTML = `<section class="set-sec"><h2>Storage</h2><p class="help">Everything FrameForge keeps is in one folder: your videos, clips, recordings, creators and settings. You can open it, back it up, or move it to a drive with more room.</p>
+          ${s.full ? `<div class="note" style="margin:0 0 14px">${ic("warn")}<span><b>This drive is almost full, so FrameForge can't take new videos.</b> ${gb(s.free_gb)} free on ${esc(s.drive)}; it needs at least ${gb(s.min_free_gb)}. Free up space, or move the folder to another drive below.</span></div>` : ""}
+          ${s.pending ? `<div class="note" style="margin:0 0 14px">${ic("clock")}<span><b>The folder changes to ${esc(s.pending)} the next time FrameForge starts.</b> Close FrameForge and start it again. <button class="btn sm ghost" data-act="storcancel">Undo</button></span></div>` : ""}
           <div class="stor-path"><code>${esc(s.path)}</code>${s.local ? `<button class="btn" data-act="storopen">${ic("folder")}Open folder</button>` : ""}</div>
           <div class="stor-bar ${s.full ? "low" : ""}" role="img" aria-label="${Math.round(usedPct)}% of the drive is used"><i style="width:${usedPct}%"></i></div>
-          <div class="stor-nums"><span>ClipForge uses <b>${gb(s.used_gb)}</b></span><span><b>${gb(s.free_gb)}</b> free of ${gb(s.total_gb)} on ${esc(s.drive)}</span></div>
+          <div class="stor-nums"><span>FrameForge uses <b>${gb(s.used_gb)}</b></span><span><b>${gb(s.free_gb)}</b> free of ${gb(s.total_gb)} on ${esc(s.drive)}</span></div>
           ${s.fixed ? `<p class="sub" style="margin-top:16px">This folder is set with CLIPFORGE_DATA in the .env file. Change it there, or remove that line to choose it here.</p>`
-            : S.storOpen ? `<div class="stor-change"><label class="f">New folder<span class="with"><input id="stor_new" placeholder="For example D:\\ClipForge" spellcheck="false" value="${esc(S.storNew || "")}">${s.local ? `<button class="btn" type="button" data-act="storpick">Browse</button>` : ""}</span></label>
+            : S.storOpen ? `<div class="stor-change"><label class="f">New folder<span class="with"><input id="stor_new" placeholder="For example D:\\FrameForge" spellcheck="false" value="${esc(S.storNew || "")}">${s.local ? `<button class="btn" type="button" data-act="storpick">Browse</button>` : ""}</span></label>
                 <label class="ck"><input type="checkbox" id="stor_move" checked>Move everything that is in the current folder there too</label>
-                <p class="sub">The change happens the next time ClipForge starts, so nothing is moved while a video is being made.</p>
+                <p class="sub">The change happens the next time FrameForge starts, so nothing is moved while a video is being made.</p>
                 <div class="row"><button class="btn primary" data-act="storsave">Use this folder</button><button class="btn ghost" data-act="storchange">Cancel</button></div></div>`
             : `<div class="row" style="margin-top:16px"><button class="btn" data-act="storchange">Change folder</button></div>`}</section>`;
     }
@@ -2383,7 +2386,7 @@ async function drawSettings() {
             <p class="sub">To let people connect ${name}, register this server once with <a href="${g[0]}" target="_blank" rel="noopener">${g[1]}</a>. It takes about five minutes.</p>
             <ol>${g[2].map(x => `<li>${x}</li>`).join("")}</ol>
             <div class="copyrow"><code>${esc(st.redirect)}</code><button class="btn sm" data-act="copytext" data-t="${esc(st.redirect)}">${ic("copy")}Copy</button></div>
-            ${!st.https && pf !== "youtube" ? `<p class="warnline">${name} only accepts https addresses. Put ClipForge on a domain with https (or a tunnel) and set CLIPFORGE_PUBLIC_URL to it first.</p>` : ""}
+            ${!st.https && pf !== "youtube" ? `<p class="warnline">${name} only accepts https addresses. Put FrameForge on a domain with https (or a tunnel) and set CLIPFORGE_PUBLIC_URL to it first.</p>` : ""}
             <div class="fields"><label class="f">${esc(st.id_label)}<input id="app_id" placeholder="${st.ready ? "Saved: " + esc(st.id_hint) + ". Paste a new one to replace it" : ""}" autocomplete="off" spellcheck="false"></label>
               <label class="f">${esc(st.secret_label)}<input id="app_secret" type="password" placeholder="${st.ready ? "Saved. Paste a new one to replace it" : ""}" autocomplete="off"></label></div>
             <p class="sub">${g[3]}</p>
@@ -2443,10 +2446,113 @@ function drawClipDlg(full) {
 $("#clipdlg").addEventListener("close", () => { $("#clipdlg").innerHTML = ""; D.jid = null; });
 $("#clipdlg").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
 
+/* ============================================================ FrameForge Projects */
+async function loadProjects() {
+  try {
+    const res = await api("/api/projects");
+    S.projects = res.projects || [];
+  } catch { S.projects = []; }
+  drawProjects();
+}
+function drawProjects() {
+  const el = $("#ff-projects");
+  if (!el) return;
+  const list = S.projects || [];
+  el.innerHTML = `
+    <div style="display:grid;gap:18px;max-width:980px">
+      <form id="ff-create-form" class="card" style="padding:18px;display:grid;gap:12px">
+        <div style="font-weight:600;font-size:15px">New FrameForge Video</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <input class="in" name="title" placeholder="Video title or topic" required>
+          <input class="in" name="source_url" placeholder="Source URL or local video path" required>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <select class="in" name="aspect_ratio" style="width:auto">
+            <option value="9:16">9:16 Vertical (Shorts / Reels)</option>
+            <option value="16:9">16:9 Landscape (YouTube)</option>
+            <option value="1:1">1:1 Square</option>
+            <option value="4:5">4:5 Portrait</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)">
+            Frames
+            <input class="in" name="target_frames" type="number" min="4" max="300" value="40" style="width:84px">
+          </label>
+          <button class="btn primary" type="submit" style="margin-left:auto">Create &amp; Render</button>
+        </div>
+      </form>
+      <div style="display:grid;gap:12px">
+        ${list.length ? list.map(p => `
+          <div class="card" style="padding:16px;display:grid;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;justify-content:space-between">
+              <div>
+                <div style="font-weight:600">${esc(p.title)}</div>
+                <div style="font-size:12px;color:var(--muted)">${esc(p.aspect_ratio)} · ${esc(p.status)}${p.resolution ? ` · ${esc(p.resolution)}` : ""}${p.duration_sec ? ` · ${p.duration_sec}s` : ""}${p.asset_count ? ` · ${p.asset_count} frames` : ""}</div>
+              </div>
+              <span class="badge">${esc(p.approval_status || "pending_review")}</span>
+            </div>
+            ${p.error ? `<div style="color:var(--bad);font-size:12px">${esc(p.error)}</div>` : ""}
+            ${p.status === "ready" && p.output_url ? `
+              <video controls style="width:100%;max-height:360px;background:#000;border-radius:8px" src="${esc(p.output_url)}"></video>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px">
+                  <input type="checkbox" class="ff-rights" data-id="${esc(p.project_id)}" ${p.rights_confirmed ? "checked" : ""}>
+                  Source rights confirmed
+                </label>
+                <button class="btn sm primary ff-approve" data-id="${esc(p.project_id)}">Approve</button>
+                <button class="btn sm ghost ff-reject" data-id="${esc(p.project_id)}">Reject</button>
+              </div>
+            ` : p.status === "draft" ? `<div><button class="btn sm primary ff-run" data-id="${esc(p.project_id)}">Run Pipeline</button></div>` : ""}
+          </div>
+        `).join("") : `<div class="card" style="padding:24px;color:var(--muted);text-align:center">No FrameForge projects yet. Enter a title and source above to build an original video.</div>`}
+      </div>
+    </div>`;
+  const form = $("#ff-create-form");
+  if (form) form.onsubmit = async e => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const created = await api("/api/projects", {
+      method: "POST",
+      body: JSON.stringify({
+        title: fd.get("title"),
+        source_url: fd.get("source_url"),
+        aspect_ratio: fd.get("aspect_ratio"),
+        target_frames: Number(fd.get("target_frames") || 40),
+      }),
+    });
+    await api(`/api/projects/${encodeURIComponent(created.project_id)}/run`, { method: "POST" });
+    toast("FrameForge pipeline started");
+    loadProjects();
+  };
+  el.querySelectorAll(".ff-run").forEach(b => b.onclick = async () => {
+    await api(`/api/projects/${encodeURIComponent(b.dataset.id)}/run`, { method: "POST" });
+    toast("FrameForge pipeline started");
+    loadProjects();
+  });
+  el.querySelectorAll(".ff-approve").forEach(b => b.onclick = async () => {
+    const id = b.dataset.id;
+    const chk = el.querySelector(`.ff-rights[data-id="${CSS.escape(id)}"]`);
+    await api(`/api/projects/${encodeURIComponent(id)}/review`, {
+      method: "POST",
+      body: JSON.stringify({ approval_status: "approved", rights_confirmed: !!(chk && chk.checked) }),
+    });
+    toast("Project approved");
+    loadProjects();
+  });
+  el.querySelectorAll(".ff-reject").forEach(b => b.onclick = async () => {
+    await api(`/api/projects/${encodeURIComponent(b.dataset.id)}/review`, {
+      method: "POST",
+      body: JSON.stringify({ approval_status: "rejected" }),
+    });
+    toast("Project rejected");
+    loadProjects();
+  });
+}
+
 /* ============================================================ render + polling */
 function render() {
   drawShell(); drawJobs(); drawStream(); drawSelBar();
   if (S.view === "overview") drawOverview();
+  if (S.view === "projects") drawProjects();
   if ($("#clog")) drawLog();
   if (D.jid) drawClipDlg(false);
 }
@@ -2466,6 +2572,7 @@ async function tick() {
     if (got.ai) S.status.ai = got.ai;
     if (got.unread != null) S.status.unread = got.unread;
     if (S.view === "overview") { S.overview = await api("/api/overview"); S.ovAt = Date.now(); }
+    if (S.view === "projects") loadProjects();
     if (creatorId() && !creator()) return go("overview");
     render();
   } catch {}
@@ -2708,7 +2815,7 @@ document.addEventListener("click", async e => {
     }
     if (a === "storsave") {
       const s = await send("/api/storage", {path: $("#stor_new").value, move: $("#stor_move").checked}, "PUT");
-      S.storOpen = false; toast("Saved. Close ClipForge and start it again to switch to the new folder.", "ok"); return drawSettings();
+      S.storOpen = false; toast("Saved. Close FrameForge and start it again to switch to the new folder.", "ok"); return drawSettings();
     }
     if (a === "storcancel") { await send("/api/storage", {cancel: true}, "PUT"); toast("Kept the current folder", "ok"); return drawSettings(); }
     if (a === "appsetup") { S.setupOpen = d.p && S.setupOpen !== d.p ? d.p : ""; return drawSettings(); }

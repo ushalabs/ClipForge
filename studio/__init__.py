@@ -1,3 +1,3 @@
-"""ClipForge studio package."""
+"""FrameForge studio package."""
 
 __version__ = "1.2.0"

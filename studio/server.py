@@ -1607,6 +1607,86 @@ def _open_browser_when_ready():
     threading.Thread(target=wait_then_open, daemon=True).start()
 
 
+@app.get("/api/projects")
+def api_list_projects():
+    from studio.creation.projects import list_projects
+    return {"projects": list_projects()}
+
+
+@app.post("/api/projects")
+async def api_create_project(req: Request):
+    from studio.creation.projects import create_project
+    body = await req.json()
+    project = create_project(
+        title=str(body.get("title", "Untitled Project")),
+        source_url=str(body.get("source_url", "")),
+        topic=str(body.get("topic", "")),
+        aspect_ratio=str(body.get("aspect_ratio", "9:16")),
+        target_frames=int(body.get("target_frames", 100)),
+    )
+    return project
+
+
+@app.get("/api/projects/{project_id}")
+def api_get_project(project_id: str):
+    from studio.creation.projects import get_project
+    project = get_project(project_id)
+    if not project:
+        raise HTTPException(404, "Project not found")
+    return project
+
+
+@app.post("/api/projects/{project_id}/review")
+async def api_review_project(project_id: str, req: Request):
+    from studio.creation.projects import update_project_review
+    body = await req.json()
+    project = update_project_review(
+        project_id=project_id,
+        approval_status=body.get("approval_status"),
+        rights_confirmed=body.get("rights_confirmed"),
+    )
+    if not project:
+        raise HTTPException(404, "Project not found")
+    return project
+
+
+@app.post("/api/projects/{project_id}/run")
+def api_run_project(project_id: str, sync: bool = False):
+    from studio.creation.pipeline import run_project_pipeline
+    from studio.creation.projects import get_project
+
+    project = get_project(project_id)
+    if not project:
+        raise HTTPException(404, "Project not found")
+
+    if sync:
+        return run_project_pipeline(project_id)
+
+    uid = ctx.uid()
+
+    def _worker():
+        with ctx.as_user(uid):
+            try:
+                run_project_pipeline(project_id, uid=uid)
+            except Exception:
+                pass
+
+    threading.Thread(target=_worker, daemon=True).start()
+    return {"status": "started", "project_id": project_id}
+
+
+@app.get("/api/projects/{project_id}/video")
+def api_project_video(project_id: str):
+    from studio.creation.projects import get_project
+    project = get_project(project_id)
+    if not project or not project.get("output_path"):
+        raise HTTPException(404, "Rendered video not found")
+    p = Path(project["output_path"])
+    if not p.exists():
+        raise HTTPException(404, "Rendered video file missing")
+    return FileResponse(p, media_type="video/mp4", filename=f"{project_id}.mp4")
+
+
 def main():
     print(f"\n  ClipForge is running:  {config.PUBLIC_URL}\n")
     if not config.ACCOUNTS and (config.HTTPS or config.HOST not in ("127.0.0.1", "localhost", "::1")):
