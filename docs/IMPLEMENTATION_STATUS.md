@@ -12,8 +12,8 @@
 | 1 | Universal ingestion | Complete | `b9d7367` | `studio/sources/` adapter protocol, SSRF/URL/path hardening, direct + yt-dlp adapters |
 | 2 | Frame extraction and asset catalog | Complete | `d7ffca5` | `studio/assets/` scene-balanced extraction, quality/dHash dedup, contact sheet, shortfall |
 | 3 | Visual intelligence and research | Complete | `cf786cb` | `studio/creation/research.py` transcript alignment, semantic retrieval, ID validation |
-| 4 | Original script and storyboard | Complete | Pending | `studio/creation/script.py`, `storyboard.py` structured contracts, offline fallback |
-| 5 | Narration and timing | Pending | — | Local TTS, forced alignment, monotonic cues |
+| 4 | Original script and storyboard | Complete | `7a26d37` | `studio/creation/script.py`, `storyboard.py` structured contracts, offline fallback |
+| 5 | Narration and timing | Complete | Pending | `studio/narration/` TTS interface + fallback, loudnorm, word alignment, monotonic cues |
 | 6 | Remotion composition system | Pending | — | `renderer/` Node/TS/React Remotion workspace |
 | 7 | Render orchestration and quality | Pending | — | Queue integration, ffprobe quality gates |
 | 8 | Unified creation and review UX | Pending | — | Creation wizard, asset gallery, review workspace |
