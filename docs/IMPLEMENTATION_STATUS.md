@@ -18,8 +18,8 @@
 | 7 | Render orchestration and quality | Complete | `bf9a6ed` | `studio/creation/render_pipeline.py` manifest builder, ffmpeg render, ffprobe quality gate |
 | 8 | Unified creation and review UX | Complete | `986ee02` | `studio/creation/projects.py` + `/api/projects` creation & review endpoints |
 | 9 | Safe publishing | Complete | `fd20ad3` | `studio/creation/publish_gate.py` approval + rights gate, idempotent ledger |
-| 10 | Niche and source discovery | Complete | Pending | `studio/discovery/` channel presets, topic deduplication ledger |
-| 11 | Autonomous production | Pending | — | Scheduled generation, caps, recovery |
+| 10 | Niche and source discovery | Complete | `24387fe` | `studio/discovery/` channel presets, topic deduplication ledger |
+| 11 | Autonomous production | Complete | Pending | `studio/autonomy/` daily cap, topic dedup, mandatory `pending_review` |
 | 12 | Production hardening and deployment | Pending | — | Docker, backups, benchmarks, docs |
 
 ## Verification Log
