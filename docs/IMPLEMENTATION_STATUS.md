@@ -10,8 +10,8 @@
 |---|---|---|---|---|
 | 0 | Immediate migration and rebrand | Complete | `e10b92b` | `FRAMEFORGE_*` env vars with `CLIPFORGE_*` fallback, visible `FrameForge` branding & logos |
 | 1 | Universal ingestion | Complete | `b9d7367` | `studio/sources/` adapter protocol, SSRF/URL/path hardening, direct + yt-dlp adapters |
-| 2 | Frame extraction and asset catalog | Complete | Pending | `studio/assets/` scene-balanced extraction, quality/dHash dedup, contact sheet, shortfall |
-| 3 | Visual intelligence and research | Pending | — | Tags, transcript alignment, semantic retrieval |
+| 2 | Frame extraction and asset catalog | Complete | `d7ffca5` | `studio/assets/` scene-balanced extraction, quality/dHash dedup, contact sheet, shortfall |
+| 3 | Visual intelligence and research | Complete | Pending | `studio/creation/research.py` transcript alignment, semantic retrieval, ID validation |
 | 4 | Original script and storyboard | Pending | — | Structured LLM contracts, schema validation |
 | 5 | Narration and timing | Pending | — | Local TTS, forced alignment, monotonic cues |
 | 6 | Remotion composition system | Pending | — | `renderer/` Node/TS/React Remotion workspace |
