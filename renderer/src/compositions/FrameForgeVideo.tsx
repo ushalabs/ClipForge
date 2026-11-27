@@ -29,10 +29,12 @@ export const FrameForgeVideo: React.FC<RenderManifest> = ({
         return (
           <Sequence key={scene.scene_id} from={from} durationInFrames={durationInFrames}>
             <AbsoluteFill>
-              <Img
-                src={scene.asset_path}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
+              {scene.asset_path ? (
+                <Img
+                  src={scene.asset_path}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              ) : null}
             </AbsoluteFill>
           </Sequence>
         );

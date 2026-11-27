@@ -29,6 +29,7 @@ export interface SceneItem {
 }
 
 export interface RenderManifest {
+  [key: string]: unknown;
   project_id: string;
   title: string;
   aspect_ratio: AspectRatio;

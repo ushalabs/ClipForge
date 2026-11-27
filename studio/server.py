@@ -1650,6 +1650,43 @@ async def api_review_project(project_id: str, req: Request):
     return project
 
 
+@app.post("/api/projects/{project_id}/run")
+def api_run_project(project_id: str, sync: bool = False):
+    from studio.creation.pipeline import run_project_pipeline
+    from studio.creation.projects import get_project
+
+    project = get_project(project_id)
+    if not project:
+        raise HTTPException(404, "Project not found")
+
+    if sync:
+        return run_project_pipeline(project_id)
+
+    uid = ctx.uid()
+
+    def _worker():
+        with ctx.as_user(uid):
+            try:
+                run_project_pipeline(project_id, uid=uid)
+            except Exception:
+                pass
+
+    threading.Thread(target=_worker, daemon=True).start()
+    return {"status": "started", "project_id": project_id}
+
+
+@app.get("/api/projects/{project_id}/video")
+def api_project_video(project_id: str):
+    from studio.creation.projects import get_project
+    project = get_project(project_id)
+    if not project or not project.get("output_path"):
+        raise HTTPException(404, "Rendered video not found")
+    p = Path(project["output_path"])
+    if not p.exists():
+        raise HTTPException(404, "Rendered video file missing")
+    return FileResponse(p, media_type="video/mp4", filename=f"{project_id}.mp4")
+
+
 def main():
     print(f"\n  ClipForge is running:  {config.PUBLIC_URL}\n")
     if not config.ACCOUNTS and (config.HTTPS or config.HOST not in ("127.0.0.1", "localhost", "::1")):

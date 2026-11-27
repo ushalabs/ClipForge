@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import functools
+import http.server
 import json
+import os
 import subprocess
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -110,15 +114,103 @@ def verify_rendered_video(
     )
 
 
+def _remotion_bin() -> Path | None:
+    renderer_dir = Path(__file__).resolve().parent.parent.parent / "renderer"
+    bin_name = "remotion.cmd" if os.name == "nt" else "remotion"
+    candidate = renderer_dir / "node_modules" / ".bin" / bin_name
+    return candidate if candidate.exists() else None
+
+
+def _render_with_remotion(manifest: dict[str, Any], output_path: Path, remotion_bin: Path) -> None:
+    """Serve local media over an ephemeral localhost HTTP server and invoke Remotion CLI."""
+    renderer_dir = remotion_bin.parent.parent.parent
+    file_map: dict[str, Path] = {}
+
+    remapped_scenes = []
+    for idx, s in enumerate(manifest.get("scenes", [])):
+        src = Path(s["asset_path"]).resolve()
+        key = f"/media/scene_{idx}{src.suffix or '.jpg'}"
+        file_map[key] = src
+        remapped_scenes.append({**s, "asset_path": key})
+
+    audio_key = None
+    audio_path = manifest.get("audio_path")
+    if audio_path and Path(audio_path).exists():
+        ap = Path(audio_path).resolve()
+        audio_key = f"/media/narration{ap.suffix or '.wav'}"
+        file_map[audio_key] = ap
+
+    class _MediaHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            p = file_map.get(self.path)
+            if not p or not p.exists():
+                self.send_error(404)
+                return
+            data = p.read_bytes()
+            ctype = "audio/wav" if p.suffix.lower() == ".wav" else "image/jpeg"
+            self.send_response(200)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(data)
+
+        def log_message(self, format, *args):
+            pass
+
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _MediaHandler)
+    port = server.server_address[1]
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+
+    base_url = f"http://127.0.0.1:{port}"
+    remapped_manifest = {
+        **manifest,
+        "scenes": [{**s, "asset_path": f"{base_url}{s['asset_path']}"} for s in remapped_scenes],
+        "audio_path": f"{base_url}{audio_key}" if audio_key else None,
+    }
+    props_file = output_path.parent / f"{output_path.stem}_props.json"
+    props_file.write_text(json.dumps(remapped_manifest), encoding="utf-8")
+
+    try:
+        cmd = [
+            str(remotion_bin),
+            "render",
+            "src/index.ts",
+            "FrameForgeVideo",
+            str(output_path.resolve()),
+            "--props",
+            str(props_file.resolve()),
+        ]
+        subprocess.run(cmd, cwd=str(renderer_dir), capture_output=True, text=True, check=True)
+    finally:
+        server.shutdown()
+        server.server_close()
+        props_file.unlink(missing_ok=True)
+
+
 def render_from_manifest(
     manifest: dict[str, Any],
     output_path: Path,
+    prefer_remotion: bool = True,
 ) -> QualityReport:
-    """Render MP4 from `manifest` using ffmpeg fallback (or Remotion when bundled) and verify."""
+    """Render MP4 from `manifest` using Remotion CLI when installed, or ffmpeg fallback, and verify."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     scenes = manifest.get("scenes", [])
     if not scenes:
         raise ValueError("Manifest has no scenes.")
+
+    audio_path = manifest.get("audio_path")
+    has_audio_input = bool(audio_path and Path(audio_path).exists())
+
+    remotion_bin = _remotion_bin() if prefer_remotion else None
+    if remotion_bin is not None:
+        try:
+            _render_with_remotion(manifest, output_path, remotion_bin)
+            return verify_rendered_video(output_path, require_audio=has_audio_input)
+        except Exception:
+            # Fall back to deterministic ffmpeg slideshow if headless Chrome/Remotion fails
+            pass
 
     aspect = manifest.get("aspect_ratio", "9:16")
     width, height = ASPECT_DIMENSIONS.get(aspect, (1080, 1920))

@@ -1277,6 +1277,7 @@ function drawShell() {  const nav = (v, icon, label, extra = "") => `<button cla
   put($("#nav"), nav("overview", navIc("home", "overview"), "Home") +
     nav("library", navIc("film", "library"), "All videos", (() => { const w = S.jobs.filter(j => ["queued", "running"].includes(j.status)).length;
       return w ? `<span class="working" title="${w} working now"><i></i>${w} working</span>` : S.jobs.length ? `<span class="count">${S.jobs.length}</span>` : ""; })()) +
+    nav("projects", navIc("bolt", "projects"), "Create Video") +
     `<h4><span>Creators</span></h4>` +
     S.creators.map(c => nav("c:" + c.id, cav(c), c.name,
       c.live_job ? `<span class="sb-tag rec" title="Recording now"><i></i>Rec</span>`
@@ -1297,7 +1298,8 @@ function drawShell() {  const nav = (v, icon, label, extra = "") => `<button cla
   const c = creator();
   const me = S.status.user;
   const kk = S.status.ai;
-  let title = {overview:"Studio", library:"All videos", settings:"Settings", usage:"AI usage"}[S.view] || "", sub = "", act = "";
+  let title = {overview:"Studio", library:"All videos", projects:"Create Video", settings:"Settings", usage:"AI usage"}[S.view] || "", sub = "", act = "";
+  if (S.view === "projects") sub = "Original video reconstruction and Remotion rendering.";
   if (S.view === "usage") sub = "AI tokens and calls.";
   if (S.view === "settings") sub = (S.status.accounts === false ? "AI key and connected apps." : "Profile, security and connected apps.");
   let pic = "", subHtml = null, tabs = "";
@@ -1369,6 +1371,7 @@ function go(v, tab, fromHistory) {
   if (v === "overview") view.innerHTML = `<div id="add"></div><div id="ov" style="flex:1;min-height:0;display:flex;flex-direction:column"></div>`;
   else if (v === "library") view.innerHTML = `<div id="add"></div><div class="lib-scroll"><div id="jobs"></div></div>`;
   else if (v === "settings") view.innerHTML = `<div id="sform"></div>`;
+  else if (v === "projects") { view.innerHTML = `<div id="ff-projects"></div>`; loadProjects(); }
   else if (v === "usage") { view.innerHTML = `<div id="usage"></div>`; loadUsage(); }
   else view.innerHTML = `<div id="stream"></div><div id="cbody"></div>`;   // the live player stays put across tabs: no restart, no rebuffer
   if ($("#add")) drawAdd("compact");
@@ -2443,10 +2446,113 @@ function drawClipDlg(full) {
 $("#clipdlg").addEventListener("close", () => { $("#clipdlg").innerHTML = ""; D.jid = null; });
 $("#clipdlg").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
 
+/* ============================================================ FrameForge Projects */
+async function loadProjects() {
+  try {
+    const res = await api("/api/projects");
+    S.projects = res.projects || [];
+  } catch { S.projects = []; }
+  drawProjects();
+}
+function drawProjects() {
+  const el = $("#ff-projects");
+  if (!el) return;
+  const list = S.projects || [];
+  el.innerHTML = `
+    <div style="display:grid;gap:18px;max-width:980px">
+      <form id="ff-create-form" class="card" style="padding:18px;display:grid;gap:12px">
+        <div style="font-weight:600;font-size:15px">New FrameForge Video</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <input class="in" name="title" placeholder="Video title or topic" required>
+          <input class="in" name="source_url" placeholder="Source URL or local video path" required>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <select class="in" name="aspect_ratio" style="width:auto">
+            <option value="9:16">9:16 Vertical (Shorts / Reels)</option>
+            <option value="16:9">16:9 Landscape (YouTube)</option>
+            <option value="1:1">1:1 Square</option>
+            <option value="4:5">4:5 Portrait</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)">
+            Frames
+            <input class="in" name="target_frames" type="number" min="4" max="300" value="40" style="width:84px">
+          </label>
+          <button class="btn primary" type="submit" style="margin-left:auto">Create &amp; Render</button>
+        </div>
+      </form>
+      <div style="display:grid;gap:12px">
+        ${list.length ? list.map(p => `
+          <div class="card" style="padding:16px;display:grid;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;justify-content:space-between">
+              <div>
+                <div style="font-weight:600">${esc(p.title)}</div>
+                <div style="font-size:12px;color:var(--muted)">${esc(p.aspect_ratio)} · ${esc(p.status)}${p.resolution ? ` · ${esc(p.resolution)}` : ""}${p.duration_sec ? ` · ${p.duration_sec}s` : ""}${p.asset_count ? ` · ${p.asset_count} frames` : ""}</div>
+              </div>
+              <span class="badge">${esc(p.approval_status || "pending_review")}</span>
+            </div>
+            ${p.error ? `<div style="color:var(--bad);font-size:12px">${esc(p.error)}</div>` : ""}
+            ${p.status === "ready" && p.output_url ? `
+              <video controls style="width:100%;max-height:360px;background:#000;border-radius:8px" src="${esc(p.output_url)}"></video>
+              <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px">
+                  <input type="checkbox" class="ff-rights" data-id="${esc(p.project_id)}" ${p.rights_confirmed ? "checked" : ""}>
+                  Source rights confirmed
+                </label>
+                <button class="btn sm primary ff-approve" data-id="${esc(p.project_id)}">Approve</button>
+                <button class="btn sm ghost ff-reject" data-id="${esc(p.project_id)}">Reject</button>
+              </div>
+            ` : p.status === "draft" ? `<div><button class="btn sm primary ff-run" data-id="${esc(p.project_id)}">Run Pipeline</button></div>` : ""}
+          </div>
+        `).join("") : `<div class="card" style="padding:24px;color:var(--muted);text-align:center">No FrameForge projects yet. Enter a title and source above to build an original video.</div>`}
+      </div>
+    </div>`;
+  const form = $("#ff-create-form");
+  if (form) form.onsubmit = async e => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const created = await api("/api/projects", {
+      method: "POST",
+      body: JSON.stringify({
+        title: fd.get("title"),
+        source_url: fd.get("source_url"),
+        aspect_ratio: fd.get("aspect_ratio"),
+        target_frames: Number(fd.get("target_frames") || 40),
+      }),
+    });
+    await api(`/api/projects/${encodeURIComponent(created.project_id)}/run`, { method: "POST" });
+    toast("FrameForge pipeline started");
+    loadProjects();
+  };
+  el.querySelectorAll(".ff-run").forEach(b => b.onclick = async () => {
+    await api(`/api/projects/${encodeURIComponent(b.dataset.id)}/run`, { method: "POST" });
+    toast("FrameForge pipeline started");
+    loadProjects();
+  });
+  el.querySelectorAll(".ff-approve").forEach(b => b.onclick = async () => {
+    const id = b.dataset.id;
+    const chk = el.querySelector(`.ff-rights[data-id="${CSS.escape(id)}"]`);
+    await api(`/api/projects/${encodeURIComponent(id)}/review`, {
+      method: "POST",
+      body: JSON.stringify({ approval_status: "approved", rights_confirmed: !!(chk && chk.checked) }),
+    });
+    toast("Project approved");
+    loadProjects();
+  });
+  el.querySelectorAll(".ff-reject").forEach(b => b.onclick = async () => {
+    await api(`/api/projects/${encodeURIComponent(b.dataset.id)}/review`, {
+      method: "POST",
+      body: JSON.stringify({ approval_status: "rejected" }),
+    });
+    toast("Project rejected");
+    loadProjects();
+  });
+}
+
 /* ============================================================ render + polling */
 function render() {
   drawShell(); drawJobs(); drawStream(); drawSelBar();
   if (S.view === "overview") drawOverview();
+  if (S.view === "projects") drawProjects();
   if ($("#clog")) drawLog();
   if (D.jid) drawClipDlg(false);
 }
@@ -2466,6 +2572,7 @@ async function tick() {
     if (got.ai) S.status.ai = got.ai;
     if (got.unread != null) S.status.unread = got.unread;
     if (S.view === "overview") { S.overview = await api("/api/overview"); S.ovAt = Date.now(); }
+    if (S.view === "projects") loadProjects();
     if (creatorId() && !creator()) return go("overview");
     render();
   } catch {}
