@@ -42,7 +42,24 @@ def _load_dotenv():
 
 
 _load_dotenv()
-env = os.environ.get
+_WARNED_ENV: set[str] = set()
+
+
+def env(key: str, default=None):
+    """Read an environment variable, preferring FRAMEFORGE_* over legacy CLIPFORGE_*."""
+    if key.startswith("CLIPFORGE_"):
+        ff_key = "FRAMEFORGE_" + key[10:]
+        val = os.environ.get(ff_key)
+        if val is not None:
+            return val
+        legacy = os.environ.get(key)
+        if legacy is not None:
+            if key not in _WARNED_ENV:
+                _WARNED_ENV.add(key)
+                print(f"[FrameForge] Warning: {key} is deprecated; use {ff_key} instead.", file=sys.stderr)
+            return legacy
+        return default
+    return os.environ.get(key, default)
 
 
 _kept: dict = {}

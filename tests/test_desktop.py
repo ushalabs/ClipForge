@@ -50,7 +50,7 @@ class DesktopTests(unittest.TestCase):
             open_mock.assert_not_called()
 
     def test_loading_html_branding(self):
-        self.assertIn("ClipForge", desktop.LOADING_HTML)
+        self.assertIn("FrameForge", desktop.LOADING_HTML)
         self.assertNotIn("ClipKontrast", desktop.LOADING_HTML)
         self.assertNotIn("PeakCut", desktop.LOADING_HTML)
 
